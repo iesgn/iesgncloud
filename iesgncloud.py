@@ -16,10 +16,10 @@ url = 'http://jupiter:35357/v2.0/'
 print("El fichero de usuarios debe tener el formato:")
 print("nombre de usuario,email,contraseña en crypt sha512 con sal")
 nom_fichero = raw_input("Nombre del fichero de usuarios: ")
-f = open(nom_fichero,r)
+f = open(nom_fichero,'r')
 
 for linea in f:
-    campos=linea.split(',')
+    campos = linea.split(',')
     payload = {"user": {"name": campos[0],
                         "email": campos[1],
                         "enabled": True,
