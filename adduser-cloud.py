@@ -64,7 +64,7 @@ usuarios_ldap = l.search_s(path, ldap.SCOPE_SUBTREE, filtro, lista_atrib)
 url = config.get("keystone","url")
 while True:
     adminuser = raw_input("Usuario de Keystone: ")
-    adminpass = getpass("Introduce la contraseña: ")
+    adminpass = getpass("Contraseña: ")
     admintoken = obtener_token(url,adminuser,adminpass)
     if len(admintoken) != 0:
         break
@@ -80,8 +80,21 @@ for usuario in usuarios_ldap:
     username = usuario[1]["uid"][0]
     # Comprobamos si existe el usuario
     if test_usuario(usuarios_cloud, username):
-        # Actualizamos la contraseña
-        print "Actualizamos"
+        # Actualizamos el usuario
+        cont = 0
+        for vuelta in usuarios_cloud:
+            if vuelta["name"] == username:
+                payload = usuarios_cloud[cont]
+                userid = vuelta["id"]
+                break
+            else:
+                cont += 1
+        payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
+        actualiza_usuario = requests.post(url+'users/{%s}' % userid, headers =
+                                          cabecera,data=payload)
+        if actualiza_usuario.status_code == 200:
+            id_usuario = json.loads(actualiza_usuario.text)["user"]["id"]
+            print "Actualizado el usuario %s con id %s" % (usuario[1]["uid"][0],id_usuario)
     else:
         # Creamos el usuario y el tenant
         payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
