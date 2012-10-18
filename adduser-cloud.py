@@ -15,7 +15,7 @@ def obtener_token(url,user,passwd):
     y devuelve el token de sesion
     """
     cabecera1 = {'Content-type': 'application/json'}
-    datos = '{"auth":{"passwordCredentials":{"username": "%s", "password": "%s"}}}' % (user,passwd)
+    datos = '{"auth":{"passwordCredentials":{"username": "%s", "password": "%s"}, "tenantName":"service"}}' % (user,passwd)
     solicitud = requests.post(url+'tokens', headers = cabecera1, data=datos)
     if solicitud.status_code == 200:
         token = json.loads(solicitud.text)["access"]["token"]["id"]
@@ -23,7 +23,17 @@ def obtener_token(url,user,passwd):
     else:
         print "Usuario y/o contraseña incorrecto/a"
         return ''   
-        
+
+def test_usuario(usuarios_cloud,usuario):
+    """
+    Función que comprueba si el usuario está o no en el objeto usuarios_cloud
+    """
+    for user in usuarios_cloud:
+        if user["name"] == usuario:
+            print "Ya existe el usuario %s. Actualizamos contraseña" % usuario
+            return 1
+    return 0
+    
 # Se pasa como parámetro el nombre del usuario:
 if len(sys.argv) == 2:
     usuario = sys.argv[1]
@@ -68,18 +78,16 @@ usuarios_cloud = json.loads(solicitud.text)["users"]
 # tenant del que es miembro (proy-...)
 for usuario in usuarios_ldap:
     username = usuario[1]["uid"][0]
+    # Comprobamos si existe el usuario
+    test_usuario(usuario)
+    if 
     
-    payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True,
-    "password": "$s"}}' % 
-    persona[1]["uid"][0]
-    persona[1]["mail"][0]
-    persona[1]["audio"][0]
-    print payload
+    payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
 
     payload2 = {}
     payload2["tenant"] = {}
-    payload2["tenant"]["name"] = "proy-%s" % persona[1]["uid"][0]
-    payload2["tenant"]["description"] = "Proyecto de %s" % persona[1]["uid"][0]
+    payload2["tenant"]["name"] = "proy-%s" % usuario[1]["uid"][0]
+    payload2["tenant"]["description"] = "Proyecto de %s" % usuario[1]["uid"][0]
     payload2["tenant"]["enabled"] = True    
     
     # Añadimos cada usuario a la base de datos de keystone:
@@ -90,7 +98,7 @@ for usuario in usuarios_ldap:
         id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
         print "Creado el usuario con id %s" % id_usuario
     else:
-        print "No se ha creado el usuario %s" % persona[1]["uid"][0]
+        print "No se ha creado el usuario %s" % usuario[1]["uid"][0]
         continue
     # Añadimos un tenant para cada usuario:
     nuevo_proy = requests.post(url+'tenants', headers = cabecera,
