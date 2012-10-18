@@ -80,44 +80,45 @@ for usuario in usuarios_ldap:
     username = usuario[1]["uid"][0]
     # Comprobamos si existe el usuario
     test_usuario(usuario)
-    if 
-    
-    payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
-
-    payload2 = {}
-    payload2["tenant"] = {}
-    payload2["tenant"]["name"] = "proy-%s" % usuario[1]["uid"][0]
-    payload2["tenant"]["description"] = "Proyecto de %s" % usuario[1]["uid"][0]
-    payload2["tenant"]["enabled"] = True    
-    
-    # Añadimos cada usuario a la base de datos de keystone:
-    nuevo_usuario = requests.post(url+'users', headers = cabecera,
-                                  data=json.dumps(payload))
-    if nuevo_usuario.status_code == 200:
-	print nuevo_usuario.text
-        id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
-        print "Creado el usuario con id %s" % id_usuario
+    if test_usuario(usuarios_cloud, username):
+        # Actualizamos la contraseña
     else:
-        print "No se ha creado el usuario %s" % usuario[1]["uid"][0]
-        continue
-    # Añadimos un tenant para cada usuario:
-    nuevo_proy = requests.post(url+'tenants', headers = cabecera,
-                               data=json.dumps(payload2))
-    if nuevo_proy.status_code == 200:
-        id_proy = json.loads(nuevo_proy.text)["tenant"]["id"]
-        print "Creado el tenant con id %s" % id_proy
-        
-    # En la versión 2.0 del API de keystone no es posible realizar operaciones
-    # sobre roles o asignar un rol a un usuario en un tenant, tenemos que hacer
-    # esto con el cliente keystone :-/
+        print "Creamos el usuario"
+        # Creamos el usuario y el tenant
 
-    # Ponemos el id de Member a "mano": 414fd98137754204bc61fad1d40cbdbc
-    member_id = "414fd98137754204bc61fad1d40cbdbc"
-        
-    subprocess.call("keystone --token %s --endpoint %s user-role-add --user %s --role %s --tenant_id %s" % (admintoken, url, id_usuario,
-                                                 member_id, id_proy), shell = True) 
 
-else:
-    print "Usuario o contraseña incorrecto/a"
-        
+    # payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
+
+    # payload2 = {}
+    # payload2["tenant"] = {}
+    # payload2["tenant"]["name"] = "proy-%s" % usuario[1]["uid"][0]
+    # payload2["tenant"]["description"] = "Proyecto de %s" % usuario[1]["uid"][0]
+    # payload2["tenant"]["enabled"] = True    
     
+    # # Añadimos cada usuario a la base de datos de keystone:
+    # nuevo_usuario = requests.post(url+'users', headers = cabecera,
+    #                               data=json.dumps(payload))
+    # if nuevo_usuario.status_code == 200:
+    #     print nuevo_usuario.text
+    #     id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
+    #     print "Creado el usuario con id %s" % id_usuario
+    # else:
+    #     print "No se ha creado el usuario %s" % usuario[1]["uid"][0]
+    #     continue
+    # # Añadimos un tenant para cada usuario:
+    # nuevo_proy = requests.post(url+'tenants', headers = cabecera,
+    #                            data=json.dumps(payload2))
+    # if nuevo_proy.status_code == 200:
+    #     id_proy = json.loads(nuevo_proy.text)["tenant"]["id"]
+    #     print "Creado el tenant con id %s" % id_proy
+        
+    # # En la versión 2.0 del API de keystone no es posible realizar operaciones
+    # # sobre roles o asignar un rol a un usuario en un tenant, tenemos que hacer
+    # # esto con el cliente keystone :-/
+
+    
+    # # Ponemos el id de Member a "mano": 414fd98137754204bc61fad1d40cbdbc
+    # member_id = "414fd98137754204bc61fad1d40cbdbc"
+        
+    # subprocess.call("keystone --token %s --endpoint %s user-role-add --user %s --role %s --tenant_id %s" % (admintoken, url, id_usuario,
+    #                                              member_id, id_proy), shell = True)     
