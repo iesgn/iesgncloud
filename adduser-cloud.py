@@ -101,26 +101,25 @@ for usuario in usuarios_ldap:
         # Creamos un diccionario con los datos del tenant del usuario paso a paso:
         payload2 = {"tenant":{"name":"proy-%s" % username}}
         payload2["tenant"]["description"] = "Proyecto personal de %s" % username
-        payload2["enabled"] = True
+        payload2["tenant"]["enabled"] = True
         # Añadimos cada usuario a la base de datos de keystone:
         nuevo_usuario = requests.post(url+'users', headers = cabecera,data=json.dumps(payload))
         if nuevo_usuario.status_code == 200:
             id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
             print "Creado el usuario %s con id %s" % (username, id_usuario)
-        else:
-            print "No se ha creado el usuario %s" % username
-            continue
         # Añadimos un tenant para cada usuario:
-        nuevo_proy = requests.post(url+'tenants', headers = cabecera,data=payload2)
-        if nuevo_proy.status_code == 200:
-            id_proy = json.loads(nuevo_proy.text)["tenant"]["id"]
-            print "Creado el tenant con id %s" % id_proy
-        
+            nuevo_proy = requests.post(url+'tenants', headers = cabecera,data=json.dumps(payload2))
+            if nuevo_proy.status_code == 200:
+                id_proy = json.loads(nuevo_proy.text)["tenant"]["id"]
+                print "Creado el tenant con id %s" % id_proy
         # En la versión 2.0 del API de keystone no es posible realizar operaciones
         # sobre roles o asignar un rol a un usuario en un tenant, tenemos que hacer
         # esto con el cliente keystone :-/
     
         # Ponemos el id de Member a "mano": 414fd98137754204bc61fad1d40cbdbc
-        member_id = "414fd98137754204bc61fad1d40cbdbc"
+                member_id = "414fd98137754204bc61fad1d40cbdbc"
+                subprocess.call("keystone --token %s --endpoint %s user-role-add --user %s --role %s --tenant_id %s" % (admintoken, url, id_usuario, member_id, id_proy), shell = True)
+        else:
+            print "No se ha creado el usuario %s" % username
+            continue
         
-        subprocess.call("keystone --token %s --endpoint %s user-role-add --user %s --role %s --tenant_id %s" % (admintoken, url, id_usuario, member_id, id_proy), shell = True)
