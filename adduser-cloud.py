@@ -32,30 +32,44 @@ def test_usuario(usuarios_cloud,usuario):
         if user["name"] == usuario:
             return 1
     return 0
-    
+
+print ""
+print "Programa para añadir usuarios del LDAP al cloud"
+print "  Para añadir o modificar un solo usuario, utiliza:"
+print "  adduser-cloud <nombre-usuario>"
+print ""
+if raw_input("¿Seguro que quieres seguir (s/n)?") != 's':
+    sys.exit()
+
 # Se pasa como parámetro el nombre del usuario:
 if len(sys.argv) == 2:
     usuario = sys.argv[1]
     print "Añadiendo el usuario %s al Cloud" % usuario
 else:
     usuario = "*"
-
+    print "Añadiendo o modificando todos los usuarios"
+    
 # Leemos los parámetros del fichero de configuración
 config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
     
 #Realizamos la conexión con el LDAP:
-path = config.get("LDAP","path")
-l = ldap.open(config.get("LDAP","ldap_server"))
-bind_user = config.get("LDAP","bind_dn")
-bind_pass = getpass("Password para admin de LDAP: ")
+path = config.get("LDAP", "path")
+l = ldap.open(config.get("LDAP", "ldap_server"))
+ldap_user = raw_input("Nombre de usuario del administrador del LDAP: ")
+ldap_user_atrib = config.get("LDAP","user_rdn_attrib")
+bind_user = "%s=%s,%s" (ldap_user_atrib, ldap_user, path)
+config.get("LDAP", "bind_dn")
+bind_pass = getpass("Contraseña: ")
 l.simple_bind_s(bind_user, bind_pass)
 # Definimos una lista con 3 atributos (rdn del usuario, mail y atributo en el
 # que se encuentra el hash SHA512 con sal)
 lista_atrib = [config.get("LDAP","user_rdn_attrib"),
                'mail',config.get("LDAP","user_pass_attrib")]
 # Filtramos los objetos que son inetOrgPerson y tienen 
-filtro = '(&(objectClass=inetOrgPerson)(%s=*)(%s=%s))' % (lista_atrib[2], lista_atrib[0], usuario)
+filtro = '(&(objectClass=inetOrgPerson)(%s=*)(%s=%s))' % (lista_atrib[2],
+                                                          lista_atrib[0],
+                                                          usuario)
 # El objeto LDAP usuarios_ldap es el resultado de la búsqueda
 usuarios_ldap = l.search_s(path, ldap.SCOPE_SUBTREE, filtro, lista_atrib)
     
