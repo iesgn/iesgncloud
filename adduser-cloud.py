@@ -30,7 +30,6 @@ def test_usuario(usuarios_cloud,usuario):
     """
     for user in usuarios_cloud:
         if user["name"] == usuario:
-            print "Ya existe el usuario %s. Actualizamos contraseña" % usuario
             return 1
     return 0
     
@@ -82,19 +81,22 @@ for usuario in usuarios_ldap:
     if test_usuario(usuarios_cloud, username):
         # Actualizamos el usuario
         cont = 0
-        for vuelta in usuarios_cloud:
-            if vuelta["name"] == username:
-                payload = usuarios_cloud[cont]
-                userid = vuelta["id"]
+        for usuario_cloud in usuarios_cloud:
+            if usuario_cloud["name"] == username:
+                nuevo_pass = usuario[1]["%s"][0] % lista_atrib[2]
+                userid = usuario_cloud["id"]
+                print nuevo_pass, userid
+                # subprocess.call("keystone --token %s --endpoint %s
+                #                 user-password-update --pass %s --id %s" %
+                #                 (admintoken, url, nuevo_pass, userid), shell = True)
                 break
             else:
                 cont += 1
-        payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
-        actualiza_usuario = requests.post(url+'users/{%s}' % userid, headers =
-                                          cabecera,data=payload)
-        if actualiza_usuario.status_code == 200:
-            id_usuario = json.loads(actualiza_usuario.text)["user"]["id"]
-            print "Actualizado el usuario %s con id %s" % (usuario[1]["uid"][0],id_usuario)
+                #        actualiza_usuario = requests.post(url+'users/{%s}' % userid, headers =
+#                                          cabecera,data=payload)
+#        if actualiza_usuario.status_code == 200:
+#            id_usuario = json.loads(actualiza_usuario.text)["user"]["id"]
+#            print "Actualizado el usuario %s con id %s" % (usuario[1]["uid"][0],id_usuario)
     else:
         # Creamos el usuario y el tenant
         payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
