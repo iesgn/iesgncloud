@@ -76,38 +76,39 @@ usuarios_cloud = json.loads(solicitud.text)["users"]
 # Si el usuario existe, se actualiza. Si no existe se crea el usuario y el
 # tenant del que es miembro (proy-...)
 for usuario in usuarios_ldap:
-    username = usuario[1]["uid"][0]
+    username = usuario[1]["%s" % lista_atrib[0]][0]
     # Comprobamos si existe el usuario
     if test_usuario(usuarios_cloud, username):
         # Actualizamos el usuario
         cont = 0
         for usuario_cloud in usuarios_cloud:
             if usuario_cloud["name"] == username:
-                nuevo_pass = usuario[1]["%s"][0] % lista_atrib[2]
+                nuevo_pass = usuario[1]["%s" % lista_atrib[2]][0]
                 userid = usuario_cloud["id"]
                 print nuevo_pass, userid
-                # subprocess.call("keystone --token %s --endpoint %s
-                #                 user-password-update --pass %s --id %s" %
-                #                 (admintoken, url, nuevo_pass, userid), shell = True)
+                subprocess.call("keystone --token %s --endpoint %s user-password-update --pass %s %s" % (admintoken, url, nuevo_pass, userid), shell = True)
+                print "Actualizado el usuario %s" % username
                 break
             else:
                 cont += 1
-                #        actualiza_usuario = requests.post(url+'users/{%s}' % userid, headers =
-#                                          cabecera,data=payload)
-#        if actualiza_usuario.status_code == 200:
-#            id_usuario = json.loads(actualiza_usuario.text)["user"]["id"]
-#            print "Actualizado el usuario %s con id %s" % (usuario[1]["uid"][0],id_usuario)
     else:
-        # Creamos el usuario y el tenant
-        payload = '{"user", {"name" : "%s", "email": "%s", "enabled" : True, "password": "%s"}}' % (usuario[1]["uid"][0], usuario[1]["mail"][0], usuario[1]["audio"][0])
-        payload2 = '{"tenant", {"name" : "proy-%s", "description": "%s", "enabled" : True}}' % (usuario[1]["uid"][0], usuario[1]["uid"][0])
+        # Es un nuevo usuario, creamos el usuario y el tenant
+        # Creamos un diccionario con los datos del usuario paso a paso:
+        payload = {"user":{"name":"%s" % username}}
+        payload["user"]["email"] = "%s" %  usuario[1]["mail"][0]
+        payload["user"]["enabled"] = True
+        payload["user"]["password"] = "%s" % usuario[1]["%s" % lista_atrib[2]][0]
+        # Creamos un diccionario con los datos del tenant del usuario paso a paso:
+        payload2 = {"tenant":{"name":"proy-%s" % username}}
+        payload2["tenant"]["description"] = "Proyecto personal de %s" % username
+        payload2["enabled"] = True
         # Añadimos cada usuario a la base de datos de keystone:
-        nuevo_usuario = requests.post(url+'users', headers = cabecera,data=payload)
+        nuevo_usuario = requests.post(url+'users', headers = cabecera,data=json.dumps(payload))
         if nuevo_usuario.status_code == 200:
             id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
-            print "Creado el usuario %s con id %s" % (usuario[1]["uid"][0],id_usuario)
+            print "Creado el usuario %s con id %s" % (username, id_usuario)
         else:
-            print "No se ha creado el usuario %s" % usuario[1]["uid"][0]
+            print "No se ha creado el usuario %s" % username
             continue
         # Añadimos un tenant para cada usuario:
         nuevo_proy = requests.post(url+'tenants', headers = cabecera,data=payload2)
