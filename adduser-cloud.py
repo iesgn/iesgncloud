@@ -34,19 +34,19 @@ def test_usuario(usuarios_cloud,usuario):
     return 0
 
 print ""
-print "Programa para añadir usuarios del LDAP al cloud"
+print "Programa para añadir o modificar usuarios del LDAP al cloud"
 print ""
-print "Para añadir o modificar un solo usuario, utiliza:"
-print "adduser-cloud <nombre-usuario>"
-print ""
-if raw_input("¿Seguro que quieres seguir (s/n)? ") != 's':
-    sys.exit()
 
 # Se pasa como parámetro el nombre del usuario:
 if len(sys.argv) == 2:
     usuario = sys.argv[1]
     print "Añadiendo el usuario %s al Cloud" % usuario
 else:
+    print "Para añadir o modificar un solo usuario, utiliza:"
+    print "adduser-cloud <nombre-usuario>"
+    print ""
+    if raw_input("¿Seguro que quieres seguir (s/n)? ") != 's':
+        sys.exit()
     usuario = "*"
     print "Añadiendo o modificando todos los usuarios"
     
@@ -100,7 +100,7 @@ for usuario in usuarios_ldap:
             if usuario_cloud["name"] == username:
                 nuevo_pass = usuario[1]["%s" % lista_atrib[2]][0]
                 userid = usuario_cloud["id"]
-                subprocess.call("keystone --token %s --endpoint %s user-password-update --pass %s %s" % (admintoken, url, nuevo_pass, userid), shell = True)
+                subprocess.call("keystone --token %s --endpoint %s user-password-update --pass '%s' %s" % (admintoken, url, nuevo_pass, userid), shell = True)
                 print "Actualizado el usuario %s" % username
                 break
             else:
