@@ -8,6 +8,7 @@ from getpass import getpass
 import ldap
 import subprocess
 import ConfigParser
+from keystoneclient.v2_0 import client
 
 def obtener_token(url,user,passwd):
     """
@@ -76,12 +77,11 @@ usuarios_ldap = l.search_s(path, ldap.SCOPE_SUBTREE, filtro, lista_atrib)
     
 # Realizamos la conexión con keystone y obtenemos el token para la sesión
 url = config.get("keystone","url")
-while True:
+admintoken = ''
+while len(admintoken) != 0:
     adminuser = raw_input("Usuario de Keystone: ")
     adminpass = getpass("Contraseña: ")
     admintoken = obtener_token(url,adminuser,adminpass)
-    if len(admintoken) != 0:
-        break
 
 # Nos descargamos la lista de usuarios del cloud
 cabecera = {'X-Auth-Token':admintoken,'Content-type': 'application/json'}
