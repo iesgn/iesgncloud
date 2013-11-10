@@ -122,3 +122,6 @@ for member in ldap_users:
                   'admin_state_up': True}
         newrouter = quantum.create_router({'router':router})
         print "Creating new router with id %s" % newrouter['router']['id']
+        quantum.add_interface_router(newrouter['router']['id'],
+                                     {'subnet_id': newsubnet['subnet']['id']})
+        print "Connecting router to subnet %s" % newsubnet['subnet']['id']
