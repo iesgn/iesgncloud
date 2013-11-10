@@ -16,7 +16,7 @@ else:
     If you want to create or modify ONLY ONE USER, please use:
     $ adduser-cloud <username>
     """
-    if raw_input("Are you sure you want to continue (y/n)?)") != 'y':
+    if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
         sys.exit()
     user = "*"
     print "Adding or modifying ALL users"
