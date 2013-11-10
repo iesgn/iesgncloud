@@ -2,139 +2,123 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import requests
-import json
 from getpass import getpass
 import ldap
-import subprocess
 import ConfigParser
-from keystoneclient.v2_0 import client
+from keystoneclient.v2_0 import client as keystonec
+from quantumclient.quantum import client as quantumc
 
-def obtener_token(url,user,passwd):
-    """
-    Función que recibe el usuario y la contraseña de Keystone
-    y devuelve el token de sesion
-    """
-    cabecera1 = {'Content-type': 'application/json'}
-    datos = '{"auth":{"passwordCredentials":{"username": "%s", "password": "%s"}, "tenantName":"service"}}' % (user,passwd)
-    solicitud = requests.post(url+'tokens', headers = cabecera1, data=datos)
-    if solicitud.status_code == 200:
-        token = json.loads(solicitud.text)["access"]["token"]["id"]
-        return token
-    else:
-        print "Usuario y/o contraseña incorrecto/a"
-        return ''   
-
-def test_usuario(usuarios_cloud,usuario):
-    """
-    Función que comprueba si el usuario está o no en el objeto usuarios_cloud
-    """
-    for user in usuarios_cloud:
-        if user["name"] == usuario:
-            return 1
-    return 0
-
-print ""
-print "Programa para añadir o modificar usuarios del LDAP al cloud"
-print ""
-
-# Se pasa como parámetro el nombre del usuario:
 if len(sys.argv) == 2:
-    usuario = sys.argv[1]
-    print "Añadiendo el usuario %s al Cloud" % usuario
+    user = sys.argv[1]
+    print "Adding user %s to OpenStack" % user
 else:
-    print "Para añadir o modificar un solo usuario, utiliza:"
-    print "adduser-cloud <nombre-usuario>"
-    print ""
-    if raw_input("¿Seguro que quieres seguir (s/n)? ") != 's':
+    print """
+    If you want to create or modify ONLY ONE USER, please use:
+    $ adduser-cloud <username>
+    """
+    if raw_input("Are you sure you want to continue (y/n)?)") != 'y':
         sys.exit()
-    usuario = "*"
-    print "Añadiendo o modificando todos los usuarios"
+    user = "*"
+    print "Adding or modifying ALL users"
     
-# Leemos los parámetros del fichero de configuración
+# LDAP parameters read from config file
 config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
     
-#Realizamos la conexión con el LDAP:
+# LDAP binding
 path = config.get("ldap", "path")
 l = ldap.open(config.get("ldap", "ldap_server"))
-ldap_user = raw_input("Nombre de usuario del administrador del LDAP: ")
-ldap_user_atrib = config.get("ldap","user_rdn_attrib")
-bind_user = "%s=%s,%s" % (ldap_user_atrib, ldap_user, path)
-config.get("ldap", "bind_dn")
-bind_pass = getpass("Contraseña: ")
-l.simple_bind_s(bind_user, bind_pass)
-# Definimos una lista con 3 atributos (rdn del usuario, mail y atributo en el
-# que se encuentra el hash SHA512 con sal)
-lista_atrib = [config.get("ldap","user_rdn_attrib"),
-               'mail',config.get("ldap","user_pass_attrib")]
-# Filtramos los objetos que son inetOrgPerson y tienen 
-filtro = '(&(objectClass=inetOrgPerson)(%s=*)(%s=%s))' % (lista_atrib[2],
-                                                          lista_atrib[0],
-                                                          usuario)
-# El objeto LDAP usuarios_ldap es el resultado de la búsqueda
-usuarios_ldap = l.search_s(path, ldap.SCOPE_SUBTREE, filtro, lista_atrib)
+
+while True:
+    ldap_user_rdn = raw_input("LDAP admin rdn value (tipically username): ")
+    bind_user = "%s=%s,%s" % (config.get("ldap","user_rdn_attrib"),
+                              ldap_user_rdn,
+                              path)
+    bind_pass = getpass("LDAP admin password: ")
+    try:
+        l.simple_bind_s(bind_user, bind_pass)
+        break
+    except ldap.INVALID_CREDENTIALS:
+        print "Invalid LDAP username or password"
+
+# 3 attributes are defined into a list:
+# - rdn attribute (usually cn or uid)
+# - mail
+# - LDAP attrib containing password (SHA512 hash with salt)
+attrib_list = [config.get("ldap","user_rdn_attrib"),
+               'mail',
+               config.get("ldap","user_pass_attrib")]
+# LDAP Filter (inetOrgPerson with attributes defined in attrib_list
+ldapfilter = '(&(objectClass=inetOrgPerson)(%s=*)(%s=%s))' % (attrib_list[2],
+                                                              attrib_list[0],
+                                                              user)
+
+ldap_users = l.search_s(path, ldap.SCOPE_SUBTREE, ldapfilter, attrib_list)
+
+if len(ldap_users) == 0:
+    print "User(s) not found in LDAP tree"
+    sys.exit()
     
-# Realizamos la conexión con keystone y obtenemos el token para la sesión
-url = config.get("keystone","url")
+# Getting auth token from keystone
 admintoken = ''
-while len(admintoken) != 0:
-    adminuser = raw_input("Usuario de Keystone: ")
-    adminpass = getpass("Contraseña: ")
-    admintoken = obtener_token(url,adminuser,adminpass)
+while len(admintoken) == 0:
+    adminuser = raw_input("Keystone admin user: ")
+    adminpass = getpass("Keystone admin user password: ")
+    try:
+        keystone = keystonec.Client(username=adminuser,
+                                    password=adminpass,
+                                    tenant_name=config.get("keystone","admintenant"),
+                                    auth_url=config.get("keystone","url"))
+        admintoken = keystone.auth_token
+        
+    except keystonec.exceptions.Unauthorized:
+        print "Invalid keystone username or password"
 
-# Nos descargamos la lista de usuarios del cloud
-cabecera = {'X-Auth-Token':admintoken,'Content-type': 'application/json'}
-solicitud = requests.get(url+'users', headers = cabecera)
-usuarios_cloud = json.loads(solicitud.text)["users"]
-
-# Si el usuario existe, se actualiza. Si no existe se crea el usuario y el
-# tenant del que es miembro (proy-...)
-for usuario in usuarios_ldap:
-    username = usuario[1]["%s" % lista_atrib[0]][0]
-    # Comprobamos si existe el usuario
-    if test_usuario(usuarios_cloud, username):
-        # Actualizamos el usuario
-        cont = 0
-        for usuario_cloud in usuarios_cloud:
-            if usuario_cloud["name"] == username:
-                nuevo_pass = usuario[1]["%s" % lista_atrib[2]][0]
-                userid = usuario_cloud["id"]
-                subprocess.call("keystone --token %s --endpoint %s user-password-update --pass '%s' %s" % (admintoken, url, nuevo_pass, userid), shell = True)
-                print "Actualizado el usuario %s" % username
-                break
-            else:
-                cont += 1
-    else:
-        # Es un nuevo usuario, creamos el usuario y el tenant
-        # Creamos un diccionario con los datos del usuario paso a paso:
-        payload = {"user":{"name":"%s" % username}}
-        payload["user"]["email"] = "%s" %  usuario[1]["mail"][0]
-        payload["user"]["enabled"] = True
-        payload["user"]["password"] = "%s" % usuario[1]["%s" % lista_atrib[2]][0]
-        # Creamos un diccionario con los datos del tenant del usuario paso a paso:
-        payload2 = {"tenant":{"name":"proy-%s" % username}}
-        payload2["tenant"]["description"] = "Proyecto personal de %s" % username
-        payload2["tenant"]["enabled"] = True
-        # Añadimos cada usuario a la base de datos de keystone:
-        nuevo_usuario = requests.post(url+'users', headers = cabecera,
-                                      data=json.dumps(payload))
-        if nuevo_usuario.status_code == 200:
-            id_usuario = json.loads(nuevo_usuario.text)["user"]["id"]
-            print "Creado el usuario %s con id %s" % (username, id_usuario)
-        # Añadimos un tenant para cada usuario:
-            nuevo_proy = requests.post(url+'tenants', headers = cabecera,
-                                       data=json.dumps(payload2))
-            if nuevo_proy.status_code == 200:
-                id_proy = json.loads(nuevo_proy.text)["tenant"]["id"]
-                print "Creado el tenant con id %s" % id_proy
-        # En la versión 2.0 del API de keystone no es posible realizar operaciones
-        # sobre roles o asignar un rol a un usuario en un tenant, tenemos que hacer
-        # esto con el cliente keystone :-/
-    
-        # En lugar de consultar el id del rol member, se lee del fichero de conf:
-                member_id = config.get("keystone", "member_id")
-                subprocess.call("keystone --token %s --endpoint %s user-role-add --user %s --role %s --tenant_id %s" % (admintoken, url, id_usuario, member_id, id_proy), shell = True)
-        else:
-            print "No se ha creado el usuario %s" % username
-            continue
+for member in ldap_users:
+    username = member[1]["%s" % attrib_list[0]][0]
+    # If user exists in keystone, user password is updated
+    exists = False
+    for oldmember in keystone.users.list():
+        if oldmember.name == username:
+            new_passwd = member[1]["%s" % lista_atrib[2]][0]
+            keystone.users.update_password(oldmember.id,new_passwd)
+            exists = True
+            break
+    # If user does not exist, user is created, proy-username tenant is created
+    # and member role is assigned to user in that tenant
+            
+    if exists == False:
+        newmember = keystone.users.create(username,
+                                           member[1]["%s" % attrib_list[2]][0],
+                                           member[1]["%s" % attrib_list[1]][0])
+        print "Creating new user with id %s" % newmember.id
+        newtenant = keystone.tenants.create("proy-%s" % username,
+                                             "proyecto de %s" % username)
+        print "Creating new tenant with id %s" % newtenant.id
+        keystone.roles.add_user_role(newmember.id,
+                                     config.get("keystone","member_id"),
+                                     newtenant.id)
+        quantum = quantumc.Client('2.0',
+                                  endpoint_url=config.get("quantum","endpoint"),
+                                  token = keystone.auth_token)
+        quantum.format = 'json'
+        network = {'name':'red interna de %s' % username,
+                   'tenant_id': newtenant.id,
+                   'admin_state_up': True}
+        newnetwork = quantum.create_network({'network':network})
+        print "Creating new network with id %s" % newnetwork['network']['id']
+        subnet = {'network_id': newnetwork['network']['id'],
+                  'ip_version':4,
+                  'cidr':'10.0.0.0/24',
+                  'enable_dhcp': True,
+                   'tenant_id': newtenant.id,
+                  'dns_nameservers': ['%s' % config.get("quantum","dns_nameservers")]}
+        newsubnet = quantum.create_subnet({'subnet':subnet})
+        print "Creating new subnet with id %s" % newsubnet['subnet']['id']
+        router = {'name':'router de %s' % username,
+                  'tenant_id': newtenant.id,
+                  'external_gateway_info':{'network_id':
+                                           config.get("quantum","external_net_id")},
+                  'admin_state_up': True}
+        newrouter = quantum.create_router({'router':router})
+        print "Creating new router with id %s" % newrouter['router']['id']
