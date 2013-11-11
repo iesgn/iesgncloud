@@ -74,6 +74,11 @@ while len(admintoken) == 0:
     except keystonec.exceptions.Unauthorized:
         print "Invalid keystone username or password"
 
+# Defining member role id
+for role in keystone.roles.list():
+    if role.name == '_member_':
+        member_role_id = role.id
+
 for member in ldap_users:
     username = member[1]["%s" % attrib_list[0]][0]
     # If user exists in keystone, user password is updated
@@ -84,8 +89,15 @@ for member in ldap_users:
             keystone.users.update_password(oldmember.id,new_passwd)
             exists = True
             break
-    # If user does not exist, user is created, proy-username tenant is created
-    # and member role is assigned to user in that tenant
+    # If user does not exist:
+    # - user is created
+    # - proy-username tenant is created
+    # - member role is assigned to user in tenant proy-username
+    # - a network is created in tenant proy-username
+    # - a subnet 10.0.0.0/24 is defined in newnetwork
+    # - a router is created in tenant proy-username
+    # - router gateway is defined in a external network previously created
+    # - router interface is created in subnet 10.0.0.0/24
             
     if exists == False:
         newmember = keystone.users.create(username,
@@ -96,7 +108,7 @@ for member in ldap_users:
                                              "proyecto de %s" % username)
         print "Creating new tenant with id %s" % newtenant.id
         keystone.roles.add_user_role(newmember.id,
-                                     config.get("keystone","member_id"),
+                                     member_role_id,
                                      newtenant.id)
         quantum = quantumc.Client('2.0',
                                   endpoint_url=config.get("quantum","endpoint"),
