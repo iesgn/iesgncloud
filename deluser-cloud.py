@@ -64,19 +64,14 @@ while len(admintoken) == 0:
 #Borra el proyecto
 
 
-#para borrar un grupo de seguridad
-
-grupos=nova.security_groups.list()
-x=0
-for i in grupos:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
-
-
-nova.security_groups.delete( nova.security_groups.list()[0])
+##############
+# a continuación  estan los metodos para borrar algunos de los elementos
+# hay que probarlos y incluirlos a cada uno en un procedimiento
+##############
 
 
 # borrar una imagen 
+
 #guardamos una lista con todas las imágenes
 imagen = nova.images.list()[] 
 #listamos las imágenes
@@ -89,4 +84,39 @@ for i in imagen:
 num=raw_input ('Selecione el número de la imagen a borrar')
 #borramos la imagen
 nova.images.delete(nova.images.list()[num])
+
+
+
+#para borrar un grupo de seguridad
+
+grupos=nova.security_groups.list()
+x=0
+for i in grupos:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+num=raw_input ('Selecione el número del grupo de seguridad a borrar')
+
+nova.security_groups.delete( nova.security_groups.list()[num])
+
+
+#borrar una instancia ojo no borra el resto de elementos solo la instancia
+
+server=nova.servers.list()
+
+x=0
+for i in server:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+num=raw_input ('Selecione el número de la instancia a borrar')    
+
+nova.servers.delete(nova.servers.list()[num])
+
+
+
+
+
+
+
+
+
 
