@@ -5,6 +5,22 @@ import sys
 from getpass import getpass
 import ConfigParser
 from keystoneclient.v2_0 import client as keystonec
+from novaclient.v1_1 import client as novac
+
+# con el usuario bisharron podemos usar la api de forma estatica
+# solo con este usuario
+
+tenant = "proy-bisharron"
+keystoneurl = "http://172.22.222.1:5000/v2.0"
+user = "bisharron"
+password = "asdasd"
+
+nova = novac.Client(username = user,
+                    api_key = password,
+                    project_id = tenant,
+                    auth_url = keystoneurl)
+
+
 
 if len(sys.argv) == 2:
     user = sys.argv[1]
@@ -46,3 +62,9 @@ while len(admintoken) == 0:
 #Borra todoas las redes,subredes y routers del usuario
 #Borra el usuario del proyecto
 #Borra el proyecto
+
+
+#para borrar un grupo de seguridad
+
+nova.security_groups.delete( nova.security_groups.list()[0])
+
