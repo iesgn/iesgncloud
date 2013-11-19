@@ -66,5 +66,27 @@ while len(admintoken) == 0:
 
 #para borrar un grupo de seguridad
 
+grupos=nova.security_groups.list()
+x=0
+for i in grupos:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+
+
 nova.security_groups.delete( nova.security_groups.list()[0])
+
+
+# borrar una imagen 
+#guardamos una lista con todas las imágenes
+imagen = nova.images.list()[] 
+#listamos las imágenes
+print 'Listado de imágenes a borrar'
+x=0
+for i in imagen:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+#seleccionamos la imagen
+num=raw_input ('Selecione el número de la imagen a borrar')
+#borramos la imagen
+nova.images.delete(nova.images.list()[num])
 
