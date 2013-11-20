@@ -74,12 +74,13 @@ while len(admintoken) == 0:
 
 #guardamos una lista con todas las imágenes
 imagen = nova.images.list()
-#listamos las imágenes
-print 'Listado de imágenes a borrar'
+
 x=0
+
 for i in imagen:
     print '{0}  {1}'.format(x, i)
     x=x+1
+
 #seleccionamos la imagen
 num=raw_input ('Selecione el número de la imagen a borrar')
 #borramos la imagen
@@ -130,8 +131,24 @@ if x==0:
 
 else:
     for i in range(x): 
-        nova.servers.keypairs(nova.keypairs.list()[i])
+        nova.keypairs.delete(nova.keypairs.list()[i])
 
+
+#tiene que funcionar, pero no lo he probado para no borrarla
+#Liberar todas las ip flotantes del usuario
+ipflota=nova.floating_ips.list()
+
+x=0
+for i in ipflota:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+
+if x==0:
+    print "No tiene IPs Flotantes"
+
+else:
+    for i in range(x): 
+        nova.floating_ips.delete(nova.floating_ips.list()[i])
 
 
 
