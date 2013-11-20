@@ -2,18 +2,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Eliminar todas las instanacias del usuario (hecha por :  )
+#Eliminar todas las instanacias del usuario (Javier Giménez  )
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (hecha por: )
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Herández)
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
-#Borra todos los grupos de seguridad (hecha por: )
+#Borra todos los grupos de seguridad (Javier Giménez )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 #Borra el usuario del proyecto
 #Borra el proyecto(Miguel Angel Martin Serrano)
 
+#Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
 
 
 import sys
@@ -34,7 +35,6 @@ nova = novac.Client(username = user,
                     api_key = password,
                     project_id = tenant,
                     auth_url = keystoneurl)
-
 
 
 if len(sys.argv) == 2:
@@ -74,10 +74,9 @@ while len(admintoken) == 0:
 
 
 # borrar una imagen 
-
 #guardamos una lista con todas las imágenes
-imagen = nova.images.list()
 
+imagen = nova.images.list()
 x=0
 
 for i in imagen:
@@ -96,11 +95,15 @@ nova.images.delete(nova.images.list()[num])
 grupos=nova.security_groups.list()
 x=0
 for i in grupos:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
-num=raw_input ('Selecione el número del grupo de seguridad a borrar')
+	print '{0}  {1}'.format(x, i)
+	x=x+1
 
-nova.security_groups.delete( nova.security_groups.list()[num])
+if x==0:
+	print "No tiene ningun grupo"
+
+else:
+	for i in range(x):
+		nova.security_groups.delete( nova.security_groups.list()[num])
 
 #Esta parte funciona
 #borra todas las instacias
