@@ -11,8 +11,8 @@
 #Borra todas las reglas de todos los grupos de seguridad del usuario
 #Borra todos los grupos de seguridad (hecha por: )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-#Borra el usuario del proyecto(Miguel Angel Martin Serrano)
-#Borra el proyecto
+#Borra el usuario del proyecto
+#Borra el proyecto(Miguel Angel Martin Serrano)
 
 
 
@@ -153,7 +153,15 @@ else:
     for i in range(x): 
         nova.floating_ips.delete(nova.floating_ips.list()[i])
 
+#Borrar usuario 
+#tengo que ver como autenticarme en keystone
 
-
+from keystoneclient.v2_0 import client
+keystone = client.Client(...)
+tenants = keystone.tenants.list()
+my_tenant = [x for x in tenants if x.name=='openstackDemo'][0]
+my_user = keystone.users.delete(name="user",
+	password="password",
+	tenant_id=my_tenant.id)
 
 
