@@ -52,7 +52,7 @@ while len(admintoken) == 0:
         print "Invalid keystone username or password"
 
 #Eliminar todas las instanacias del usuario
-#Eliminar todos los snapshots del usuario
+#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario
 #Eliminar todas las instancias de voumenes del usuario
 #Liberar todas las ip flotantes del usuario
