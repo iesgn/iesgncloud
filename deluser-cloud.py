@@ -17,8 +17,6 @@
 #Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
 
 
-
-
 import sys
 from getpass import getpass
 import ConfigParser
@@ -37,7 +35,6 @@ nova = novac.Client(username = user,
                     api_key = password,
                     project_id = tenant,
                     auth_url = keystoneurl)
-
 
 
 if len(sys.argv) == 2:
@@ -77,10 +74,9 @@ while len(admintoken) == 0:
 
 
 # borrar una imagen 
-
 #guardamos una lista con todas las imágenes
-imagen = nova.images.list()
 
+imagen = nova.images.list()
 x=0
 
 for i in imagen:
@@ -99,11 +95,15 @@ nova.images.delete(nova.images.list()[num])
 grupos=nova.security_groups.list()
 x=0
 for i in grupos:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
-num=raw_input ('Selecione el número del grupo de seguridad a borrar')
+	print '{0}  {1}'.format(x, i)
+	x=x+1
 
-nova.security_groups.delete( nova.security_groups.list()[num])
+if x==0:
+	print "No tiene ningun grupo"
+
+else:
+	for i in range(x):
+		nova.security_groups.delete( nova.security_groups.list()[num])
 
 #Esta parte funciona
 #borra todas las instacias
