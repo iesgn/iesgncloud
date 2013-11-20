@@ -55,8 +55,8 @@ while len(admintoken) == 0:
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (hecha por: )
-#Liberar todas las ip flotantes del usuario (hecha por:   )
-#Borra todos los pares de claves del usuario (hecha por: )
+#Liberar todas las ip flotantes del usuario (Miguel Martín)
+#Borra todos los pares de claves del usuario (Miguel Martín)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
 #Borra todos los grupos de seguridad (hecha por: )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
