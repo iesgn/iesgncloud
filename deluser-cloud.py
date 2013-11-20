@@ -51,10 +51,10 @@ while len(admintoken) == 0:
     except keystonec.exceptions.Unauthorized:
         print "Invalid keystone username or password"
 
-#Eliminar todas las instanacias del usuario
+#Eliminar todas las instanacias del usuario (Adrián Cid Ramos)
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario
-#Eliminar todas las instancias de voumenes del usuario
+#Eliminar todas las instancias de voumenes del usuario (Adrian Cid Ramos)
 #Liberar todas las ip flotantes del usuario
 #Borra todos los pares de claves del usuario
 #Borra todas las reglas de todos los grupos de seguridad del usuario
