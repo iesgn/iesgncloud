@@ -1,11 +1,10 @@
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 #Eliminar todas las instanacias del usuario (Javier Giménez  )
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
-#Eliminar todas las instancias de voumenes del usuario (hecha por: )
+#Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García)
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Herández)
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
