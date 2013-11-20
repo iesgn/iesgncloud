@@ -1,5 +1,21 @@
+
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+
+#Eliminar todas las instanacias del usuario (hecha por :  )
+#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
+#Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
+#Eliminar todas las instancias de voumenes del usuario (hecha por: )
+#Liberar todas las ip flotantes del usuario (Miguel Martín)
+#Borra todos los pares de claves del usuario (Miguel Martín)
+#Borra todas las reglas de todos los grupos de seguridad del usuario
+#Borra todos los grupos de seguridad (hecha por: )
+#Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
+#Borra el usuario del proyecto
+#Borra el proyecto
+
+
 
 import sys
 from getpass import getpass
@@ -51,23 +67,11 @@ while len(admintoken) == 0:
     except keystonec.exceptions.Unauthorized:
         print "Invalid keystone username or password"
 
-#Eliminar todas las instanacias del usuario (hecha por :  )
-#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
-#Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
-#Eliminar todas las instancias de voumenes del usuario (hecha por: )
-#Liberar todas las ip flotantes del usuario (Miguel Martín)
-#Borra todos los pares de claves del usuario (Miguel Martín)
-#Borra todas las reglas de todos los grupos de seguridad del usuario
-#Borra todos los grupos de seguridad (hecha por: )
-#Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-#Borra el usuario del proyecto
-#Borra el proyecto
 
-
-##############
+#####################################################################################
 # a continuación  estan los metodos para borrar algunos de los elementos
 # hay que probarlos y incluirlos a cada uno en un procedimiento
-##############
+#####################################################################################
 
 
 # borrar una imagen 
