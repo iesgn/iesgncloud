@@ -116,8 +116,21 @@ else:
         nova.servers.delete(nova.servers.list()[i])
 
 
+#tiene que funcionar, pero no lo he probado para no borrarla
+#Borra todos los pares de claves del usuario.
+keypairs=nova.keypairs.list()
 
+x=0
+for i in keypairs:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
 
+if x==0:
+    print "No tiene pares de claves"
+
+else:
+    for i in range(x): 
+        nova.servers.keypairs(nova.keypairs.list()[i])
 
 
 
