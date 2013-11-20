@@ -1,5 +1,4 @@
 
-
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
@@ -7,8 +6,8 @@
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (hecha por: )
-#Liberar todas las ip flotantes del usuario (Miguel Martín)
-#Borra todos los pares de claves del usuario (Miguel Martín)
+#Liberar todas las ip flotantes del usuario (Carlos Miguel Herández)
+#Borra todos los pares de claves del usuario (Carlos Miguel Hernández)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
 #Borra todos los grupos de seguridad (hecha por: )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
