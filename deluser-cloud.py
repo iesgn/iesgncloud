@@ -2,17 +2,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Eliminar todas las instanacias del usuario (hecha por :  )
+#Eliminar todas las instanacias del usuario (Javier Giménez  )
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (hecha por: )
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Herández)
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
-#Borra todos los grupos de seguridad (hecha por: )
+#Borra todos los grupos de seguridad (Javier Giménez )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 #Borra el usuario del proyecto
 #Borra el proyecto
+
+#Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
+
 
 
 
