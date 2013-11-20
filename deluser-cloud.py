@@ -73,7 +73,7 @@ while len(admintoken) == 0:
 # borrar una imagen 
 
 #guardamos una lista con todas las imágenes
-imagen = nova.images.list()[] 
+imagen = nova.images.list()
 #listamos las imágenes
 print 'Listado de imágenes a borrar'
 x=0
@@ -98,8 +98,8 @@ num=raw_input ('Selecione el número del grupo de seguridad a borrar')
 
 nova.security_groups.delete( nova.security_groups.list()[num])
 
-
-#borrar una instancia ojo no borra el resto de elementos solo la instancia
+#Esta parte funciona
+#borra todas las instacias
 
 server=nova.servers.list()
 
@@ -107,9 +107,13 @@ x=0
 for i in server:
     print '{0}  {1}'.format(x, i)
     x=x+1
-num=raw_input ('Selecione el número de la instancia a borrar')    
 
-nova.servers.delete(nova.servers.list()[num])
+if x==0:
+    print "No tiene ninguna instancia"
+
+else:
+    for i in range(x): 
+        nova.servers.delete(nova.servers.list()[i])
 
 
 
