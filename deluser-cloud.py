@@ -11,7 +11,7 @@
 #Borra todas las reglas de todos los grupos de seguridad del usuario
 #Borra todos los grupos de seguridad (hecha por: )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-#Borra el usuario del proyecto
+#Borra el usuario del proyecto(Miguel Angel Martin Serrano)
 #Borra el proyecto
 
 
