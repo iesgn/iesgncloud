@@ -102,7 +102,7 @@ if x==0:
 
 else:
 	for i in range(x):
-		nova.security_groups.delete( nova.security_groups.list()[num])
+		nova.security_groups.delete( nova.security_groups.list()[i])
 
 #Esta parte funciona
 #borra todas las instacias
