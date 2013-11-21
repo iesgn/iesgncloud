@@ -5,8 +5,8 @@
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García)
-#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández)
-#Borra todos los pares de claves del usuario (Carlos Miguel Hernández)
+#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero)
+#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero)
 #Borra todas las reglas de todos los grupos de seguridad del usuario
 #Borra todos los grupos de seguridad (Javier Giménez )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
