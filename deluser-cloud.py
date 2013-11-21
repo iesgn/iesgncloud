@@ -10,7 +10,7 @@
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
 #Borra todos los grupos de seguridad (Javier Giménez )
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-#Borra el usuario del proyecto
+#Borra el usuario del proyecto (Carlos Mejias)
 #Borra el proyecto(Miguel Angel Martin Serrano)
 
 #Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
