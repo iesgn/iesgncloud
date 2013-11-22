@@ -10,8 +10,13 @@
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
 #Borra todos los grupos de seguridad (Javier Giménez ) Listo
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
+<<<<<<< HEAD
 #Borra el usuario del proyecto (Carlos Mejias)
 #Borra el proyecto(Miguel Angel Martin Serrano) Listo
+=======
+#Borra el usuario del proyecto (Miguel Angel Martin)
+#Borra el proyecto(Carlos mejias)
+>>>>>>> c68a3d9d64e67a1bb82e140d8810f274f332f5c1
 
 #Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
 
@@ -148,14 +153,11 @@ else:
         nova.floating_ips.delete(nova.floating_ips.list()[i])
 
 #Borrar usuario 
-#tengo que ver como autenticarme en keystone
 
-from keystoneclient.v2_0 import client
-keystone = client.Client(...)
-tenants = keystone.tenants.list()
-my_tenant = [x for x in tenants if x.name=='openstackDemo'][0]
-my_user = keystone.users.delete(name="user",
-	password="password",
-	tenant_id=my_tenant.id)
+from keystoneclient.v2_0 import keystonec
+keystone = keystonec.Client(username = user,
+                      password = password,
+                      auth_url = keystoneurl)
+del_user = keystone.users.delete(user)
 
 
