@@ -1,17 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Eliminar todas las instanacias del usuario (Javier Giménez  )
+#Eliminar todas las instanacias del usuario (Javier Giménez  ) Listo
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García)
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero)
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero)
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
-#Borra todos los grupos de seguridad (Javier Giménez )
+#Borra todos los grupos de seguridad (Javier Giménez ) Listo
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 #Borra el usuario del proyecto (Carlos Mejias)
-#Borra el proyecto(Miguel Angel Martin Serrano)
+#Borra el proyecto(Miguel Angel Martin Serrano) Listo
 
 #Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
 
@@ -91,35 +91,27 @@ nova.images.delete(nova.images.list()[num])
 
 #para borrar un grupo de seguridad
 
-grupos=nova.security_groups.list()
-x=0
-for i in grupos:
-	print '{0}  {1}'.format(x, i)
-	x=x+1
 
-if x==0:
-	print "No tiene ningun grupo"
-
-else:
-	for i in range(x):
-		nova.security_groups.delete( nova.security_groups.list()[i])
+def borrar_grupos():
+	grupos=nova.security_groups.list()
+	if len(grupos)==0:
+		print "No tiene ningun grupo"
+	else:
+		for i in grupos:
+			nova.security_groups.delete(i)
 
 #Esta parte funciona
 #borra todas las instacias
 
-server=nova.servers.list()
 
-x=0
-for i in server:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
+def borrar_instancias():
+	server=nova.servers.list()
 
-if x==0:
-    print "No tiene ninguna instancia"
-
-else:
-    for i in range(x): 
-        nova.servers.delete(nova.servers.list()[i])
+	if len(server)==0:
+		print "No tiene ninguna instancia"
+	else:
+		for i in range(x): 
+			nova.servers.delete(nova.servers.list()[i])
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
