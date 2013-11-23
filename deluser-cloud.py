@@ -144,6 +144,7 @@ def borrar_pares_de_claves():
     else:
         for i in range(len(keypairs)): 
             nova.keypairs.delete(nova.keypairs.list()[i])
+            print "Eliminada el par de claves %s" % str(keypairs[i])[10:].replace(">",'')
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
@@ -153,11 +154,12 @@ def borrar_IPs_flotantes():
     ipflota=nova.floating_ips.list()
 
     if len(ipflota)==0:
-        print "No tiene IPs Flotantes"
+        print "No tiene IPs flotantes"
 
     else:
         for i in range(len(ipflota)): 
             nova.floating_ips.delete(nova.floating_ips.list()[i])
+            print "Eliminada la IP flotante %s" % ipflota[i].ip
 
 #Borrar usuario 
 
