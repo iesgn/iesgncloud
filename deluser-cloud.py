@@ -71,10 +71,19 @@ while len(admintoken) == 0:
         print "Invalid keystone username or password"
 
 
-#####################################################################################
-# a continuación  estan los metodos para borrar algunos de los elementos
-# hay que probarlos y incluirlos a cada uno en un procedimiento
-#####################################################################################
+########################################################################
+# Orden en que llamaremos a los procedimientos pra realizar el boorado #
+########################################################################
+
+
+
+
+
+
+############################################################################
+# a continuación  estan los metodos para borrar algunos de los elementos   #
+# hay que probarlos y incluirlos a cada uno en un procedimiento            #
+############################################################################
 
 
 # borrar una imagen 
@@ -115,7 +124,7 @@ def borrar_instancias():
 	if len(server)==0:
 		print "No tiene ninguna instancia"
 	else:
-		for i in range(x): 
+		for i in server: 
 			nova.servers.delete(nova.servers.list()[i])
 
 
