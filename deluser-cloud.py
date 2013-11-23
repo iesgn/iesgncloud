@@ -1,24 +1,24 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Eliminar todas las instanacias del usuario (Javier Giménez  ) Listo
-#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
-#Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
-#Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García)
+#Eliminar todas las instanacias del usuario (Javier Giménez  ) Listo #
+#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz) 
+#Eliminar todos los volumenes del usuario (Adrian Cid Ramos) #
+#Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García) #
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) Completada
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) Completada
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
 #Borra todos los grupos de seguridad (Javier Giménez ) Listo
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 <<<<<<< HEAD
-#Borra el usuario del proyecto (Carlos Mejias)
-#Borra el proyecto(Miguel Angel Martin Serrano) Listo
+#Borra el usuario del proyecto (Carlos Mejias) #
+#Borra el proyecto(Miguel Angel Martin Serrano) Listo #
 =======
-#Borra el usuario del proyecto (Miguel Angel Martin)
-#Borra el proyecto(Carlos mejias)
+#Borra el usuario del proyecto (Miguel Angel Martin) #
+#Borra el proyecto(Carlos mejias) #
 >>>>>>> c68a3d9d64e67a1bb82e140d8810f274f332f5c1
 
-#Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla)
+#Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) #
 
 
 import sys
@@ -78,7 +78,17 @@ while len(admintoken) == 0:
 
 
 
-
+#
+#
+#
+#
+#
+# borrar isntancias de volúmenes
+# borrar volumenes
+# borrar imágenes
+borrar_instancias() #borrar instancias
+# borrar proyecto
+# borrar usuario
 
 ############################################################################
 # a continuación  estan los metodos para borrar algunos de los elementos   #
@@ -104,7 +114,6 @@ nova.images.delete(nova.images.list()[num])
 
 
 #para borrar un grupo de seguridad
-
 
 def borrar_grupos():
 	grupos=nova.security_groups.list()
