@@ -5,8 +5,8 @@
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz)
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos)
 #Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García)
-#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero)
-#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero)
+#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) Completada
+#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) Completada
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
 #Borra todos los grupos de seguridad (Javier Giménez ) Listo
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
@@ -121,36 +121,30 @@ def borrar_instancias():
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Borra todos los pares de claves del usuario.
-keypairs=nova.keypairs.list()
+def borrar_pares_de_claves():
+    keypairs=nova.keypairs.list()
 
-x=0
-for i in keypairs:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
+    if len(keypairs)==0:
+        print "No tiene pares de claves"
 
-if x==0:
-    print "No tiene pares de claves"
-
-else:
-    for i in range(x): 
-        nova.keypairs.delete(nova.keypairs.list()[i])
+    else:
+        for i in range(len(keypairs)): 
+            nova.keypairs.delete(nova.keypairs.list()[i])
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Liberar todas las ip flotantes del usuario
-ipflota=nova.floating_ips.list()
 
-x=0
-for i in ipflota:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
 
-if x==0:
-    print "No tiene IPs Flotantes"
+def borrar_IPs_flotantes():
+    ipflota=nova.floating_ips.list()
 
-else:
-    for i in range(x): 
-        nova.floating_ips.delete(nova.floating_ips.list()[i])
+    if len(ipflota)==0:
+        print "No tiene IPs Flotantes"
+
+    else:
+        for i in range(len(ipflota)): 
+            nova.floating_ips.delete(nova.floating_ips.list()[i])
 
 #Borrar usuario 
 
