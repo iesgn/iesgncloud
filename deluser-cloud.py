@@ -14,11 +14,11 @@
 #Borra el usuario del proyecto (Carlos Mejias) #
 #Borra el proyecto(Miguel Angel Martin Serrano) Listo #
 =======
-#Borra el usuario del proyecto (Miguel Angel Martin) #
+#Borra el usuario del proyecto (Miguel Angel Martin) 
 #Borra el proyecto(Carlos mejias) #
 >>>>>>> c68a3d9d64e67a1bb82e140d8810f274f332f5c1
 
-#Eliminar todas las mágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) #
+#Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) #
 
 
 import sys
@@ -71,21 +71,21 @@ while len(admintoken) == 0:
         print "Invalid keystone username or password"
 
 
-########################################################################
-# Orden en que llamaremos a los procedimientos pra realizar el boorado #
-########################################################################
+###############################################################################
+# Orden en que llamaremos a las funciones pra realizar el boorado             #
+# Cuando esten listos los procedimiento id poniendolso en su sitio            #
+# Si se detecta algun error corregidolo cuando lo veais y dejad un comentario #
+###############################################################################
 
-
-
-
-#
-#
-#
-#
-#
+# borrar reglas de lso grupos de seguridad
+borrar_grupos()# borrar grupos de seguridad
+borrar_pares_de_claves# borrar pares de claves
+# borrar redes y sub redes
+borrar_IPs_flotantes()# borrar ip flotantes
+# Borrar snaptshots
 # borrar isntancias de volúmenes
 # borrar volumenes
-# borrar imágenes
+# borrar imágenes ###########   falta por asignar    ##########
 borrar_instancias() #borrar instancias
 # borrar proyecto
 # borrar usuario
@@ -101,7 +101,6 @@ borrar_instancias() #borrar instancias
 
 imagen = nova.images.list()
 x=0
-
 for i in imagen:
     print '{0}  {1}'.format(x, i)
     x=x+1
@@ -112,9 +111,7 @@ num=raw_input ('Selecione el número de la imagen a borrar')
 nova.images.delete(nova.images.list()[num])
 
 
-
 #para borrar un grupo de seguridad
-
 def borrar_grupos():
 	grupos=nova.security_groups.list()
 	if len(grupos)==0:
@@ -125,7 +122,6 @@ def borrar_grupos():
 
 #Esta parte funciona
 #borra todas las instacias
-
 
 def borrar_instancias():
 	server=nova.servers.list()
@@ -152,7 +148,6 @@ def borrar_pares_de_claves():
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Liberar todas las ip flotantes del usuario
-
 
 def borrar_IPs_flotantes():
     ipflota=nova.floating_ips.list()
