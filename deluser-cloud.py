@@ -158,15 +158,13 @@ def borrar_pares_de_claves():
 
 # borrar volumenes
 
-
 def borrar_volumenes():
-	cinder = client.Client('1', $user, $password, $tenant, $keystoneurl)
-	listvol=cinder.volumes.list()
+	listvol=nova.volumes.list()
 	
 	if len(listvol)==0;
 		print "No existen volumenes"
 	else i in range(len(listvol));
-		cinder.listvol.delete(cinder.listvol.list()[i])
+		nova.listvol.delete(nova.listvol.list()[i])
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Liberar todas las ip flotantes del usuario
