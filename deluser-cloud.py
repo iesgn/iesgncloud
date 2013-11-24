@@ -130,7 +130,7 @@ def borrar_instancias():
 		print "No tiene ninguna instancia"
 	else:
 		for i in server: 
-			nova.servers.delete(nova.servers.list()[i])
+			nova.servers.delete(i)
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
