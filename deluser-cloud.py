@@ -26,6 +26,7 @@ from getpass import getpass
 import ConfigParser
 from keystoneclient.v2_0 import client as keystonec
 from novaclient.v1_1 import client as novac
+from cinderclient import client
 
 # con el usuario bisharron podemos usar la api de forma estatica
 # solo con este usuario
@@ -155,6 +156,17 @@ def borrar_pares_de_claves():
             nova.keypairs.delete(nova.keypairs.list()[i])
             print "Eliminada el par de claves %s" % str(keypairs[i])[10:].replace(">",'')
 
+# borrar volumenes
+
+
+def borrar_volumenes():
+	cinder = client.Client('1', $user, $password, $tenant, $keystoneurl)
+	listvol=cinder.volumes.list()
+	
+	if len(listvol)==0;
+		print "No existen volumenes"
+	else i in range(len(listvol));
+		cinder.listvol.delete(cinder.listvol.list()[i])
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Liberar todas las ip flotantes del usuario
