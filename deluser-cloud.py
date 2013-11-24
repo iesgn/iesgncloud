@@ -26,7 +26,7 @@ from getpass import getpass
 import ConfigParser
 from keystoneclient.v2_0 import client as keystonec
 from novaclient.v1_1 import client as novac
-from cinderclient import client
+from cinderclient import client as cinderc
 from quantumclient.v2_0 import client as quantumc
 
 # con el usuario bisharron podemos usar la api de forma estatica
@@ -43,6 +43,11 @@ nova = novac.Client(username = user,
                     auth_url = keystoneurl)
                     
 quantum = quantumc.Client(username = user,
+                    api_key = password,
+                    project_id = tenant,
+                    auth_url = keystoneurl)
+
+cinder = cinderc.Client(username = user,
                     api_key = password,
                     project_id = tenant,
                     auth_url = keystoneurl)
