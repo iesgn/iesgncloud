@@ -165,6 +165,13 @@ def borrar_volumenes():
 		print "No existen volumenes"
 	else i in range(len(listvol));
 		nova.listvol.delete(nova.listvol.list()[i])
+		
+		
+# Borra todas las redes,subredes y routers del usuario
+
+
+
+
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Liberar todas las ip flotantes del usuario
