@@ -132,6 +132,15 @@ def borrar_instancias():
 		for i in server: 
 			nova.servers.delete(i)
 
+#Eliminar todas las instantaneas de volumenes del usuario
+def borrar_instantaneasvolumen():
+	listar=nova.volume_snapshots.list()
+	if len(listar)==0:
+		print "El usuario no tiene ninguna instantanea de volumen"
+	else:
+		for i in listar: 
+			nova.volume_snapshots.delete(i)
+
 
 #tiene que funcionar, pero no lo he probado para no borrarla
 #Borra todos los pares de claves del usuario.
