@@ -27,6 +27,7 @@ import ConfigParser
 from keystoneclient.v2_0 import client as keystonec
 from novaclient.v1_1 import client as novac
 from cinderclient import client
+from quantumclient.v2_0 import client as quantumc
 
 # con el usuario bisharron podemos usar la api de forma estatica
 # solo con este usuario
@@ -170,7 +171,8 @@ def borrar_volumenes():
 # Borra todas las redes,subredes y routers del usuario
 
 
-
+def borrar_subredes():
+	lissub=nova.
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
