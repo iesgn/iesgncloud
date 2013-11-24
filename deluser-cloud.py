@@ -172,7 +172,28 @@ def borrar_volumenes():
 
 
 def borrar_subredes():
-	lissub=nova.
+	lissub=quantum.list_subnets()
+
+	if len(lissub)==0;
+		print "No hay subredes que borrar"
+	else i in range(len(listsub)):
+		quantum.delete_subnet(quantum.list_subnets()[1])
+
+def borrar_redes():
+	lisreds=quantum.list_networks()
+
+	if len(lisreds)==0;
+		print "No hay subredes que borrar"
+	else i in range(len(listreds):
+		quantum.delete_network(quantum.list_networks()[1])
+		
+def borrar_routers():
+	lisrout=quantum.list_routers()
+
+	if len(lisrout)==0;
+		print "No hay subredes que borrar"
+	else i in range(len(listrout)):
+		quantum.delete_router(quantum.list_routers()[1])
 
 
 #tiene que funcionar, pero no lo he probado para no borrarla
