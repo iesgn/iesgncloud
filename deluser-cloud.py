@@ -175,7 +175,7 @@ def borrar_volumenes():
 	if len(listvol)==0;
 		print "No existen volumenes"
 	else i in range(len(listvol));
-		cinder.listvol.delete(cinder.listvol.list(i)[i])
+		cinder.listvol.delete(cinder.listvol.list(i)[1)
 		
 		
 # Borra todas las redes,subredes y routers del usuario
@@ -187,15 +187,15 @@ def borrar_subredes():
 	if len(lissub)==0;
 		print "No hay subredes que borrar"
 	else i in range(len(listsub)):
-		quantum.delete_subnet(quantum.list_subnets(i)[1])
+		quantum.delete_subnet(quantum.subnets[i][id])
 
 def borrar_redes():
 	lisreds=quantum.list_networks()
 
 	if len(lisreds)==0;
 		print "No hay redes que borrar"
-	else i in range(len(listreds):
-		quantum.delete_network(quantum.list_networks(i)[1])
+	else i in range(len(listreds)):
+		quantum.delete_network(quantum.networks[i][id])
 		
 def borrar_routers():
 	lisrout=quantum.list_routers()
@@ -203,7 +203,7 @@ def borrar_routers():
 	if len(lisrout)==0;
 		print "No hay routers que borrar"
 	else i in range(len(listrout)):
-		quantum.delete_router(quantum.list_routers(i)[1])
+		quantum.delete_router(quantum.routers[i][id])
 
 
 #Esta parte funciona
