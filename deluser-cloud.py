@@ -149,7 +149,7 @@ def borrar_instantaneasvolumen():
 			nova.volume_snapshots.delete(i)
 
 
-#tiene que funcionar, pero no lo he probado para no borrarla
+#Esta parte funciona
 #Borra todos los pares de claves del usuario.
 def borrar_pares_de_claves():
     keypairs=nova.keypairs.list()
@@ -201,7 +201,7 @@ def borrar_routers():
 		quantum.delete_router(quantum.list_routers()[1])
 
 
-#tiene que funcionar, pero no lo he probado para no borrarla
+#Esta parte funciona
 #Liberar todas las ip flotantes del usuario
 
 def borrar_IPs_flotantes():
