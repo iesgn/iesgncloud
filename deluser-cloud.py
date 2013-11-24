@@ -170,12 +170,12 @@ def borrar_pares_de_claves():
 # borrar volumenes
 
 def borrar_volumenes():
-	listvol=nova.volumes.list()
+	listvol=cinder.volumes.list()
 	
 	if len(listvol)==0;
 		print "No existen volumenes"
 	else i in range(len(listvol));
-		nova.listvol.delete(nova.listvol.list()[i])
+		cinder.listvol.delete(cinder.listvol.list()[i])
 		
 		
 # Borra todas las redes,subredes y routers del usuario
