@@ -41,6 +41,11 @@ nova = novac.Client(username = user,
                     api_key = password,
                     project_id = tenant,
                     auth_url = keystoneurl)
+                    
+quantum = quantumc.Client(username = user,
+                    api_key = password,
+                    project_id = tenant,
+                    auth_url = keystoneurl)
 
 
 if len(sys.argv) == 2:
