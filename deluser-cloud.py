@@ -184,7 +184,7 @@ def borrar_IPs_flotantes():
 
     else:
         for i in range(len(ipflota)): 
-            nova.floating_ips.delete(nova.floating_ips.list()[i])
+            nova.floating_ips.delete(ipflota[i].id)
             print "Eliminada la IP flotante %s" % ipflota[i].ip
 
 #Borrar usuario 
