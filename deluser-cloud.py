@@ -159,8 +159,8 @@ def borrar_pares_de_claves():
 
     else:
         for i in range(len(keypairs)): 
-            nova.keypairs.delete(nova.keypairs.list()[i])
-            print "Eliminada el par de claves %s" % str(keypairs[i])[10:].replace(">",'')
+            nova.keypairs.delete(keypairs[i].name)
+            print "Eliminada el par de claves %s" % keypairs[i].name
 
 # borrar volumenes
 
