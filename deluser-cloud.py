@@ -193,7 +193,7 @@ def borrar_redes():
 	lisreds=quantum.list_networks()
 
 	if len(lisreds)==0;
-		print "No hay subredes que borrar"
+		print "No hay redes que borrar"
 	else i in range(len(listreds):
 		quantum.delete_network(quantum.list_networks()[1])
 		
@@ -201,7 +201,7 @@ def borrar_routers():
 	lisrout=quantum.list_routers()
 
 	if len(lisrout)==0;
-		print "No hay subredes que borrar"
+		print "No hay routers que borrar"
 	else i in range(len(listrout)):
 		quantum.delete_router(quantum.list_routers()[1])
 
