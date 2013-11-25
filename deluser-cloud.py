@@ -93,7 +93,7 @@ while len(admintoken) == 0:
 # Si se detecta algun error corregidolo cuando lo veais y dejad un comentario #
 ###############################################################################
 
-# borrar reglas de lso grupos de seguridad
+borrar_reglas()# borrar reglas de los grupos de seguridad
 borrar_grupos()# borrar grupos de seguridad
 borrar_pares_de_claves# borrar pares de claves
 # borrar redes y sub redes
@@ -250,4 +250,16 @@ else:
 def borrar_usuario():
 	keystone.users.delete(user)
 
+# borrar reglas de los grupos de seguridad
+
+def borrar_reglas():
+    gruposyreglas = nova.security_groups.list()
+    if len(gruposyreglas) == 0:
+        print "No tiene ningun grupo, por lo tanto, no hay reglas."
+    else:
+       for i in xrange(0,int(len(gruposyreglas))):
+           grupo = gruposyreglas[i]
+	   reglas = grupo.rules
+	   for i in xrange(0,int(len(reglas))):
+	       nova.security_group_rules.delete(reglas[i]["id"])
 
