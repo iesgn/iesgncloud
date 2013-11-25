@@ -12,7 +12,7 @@
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 #Borra el usuario del proyecto (Miguel Angel Martin) 
 #Borra el proyecto(Carlos mejias) #
-#Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) #
+#Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) # Carlos Mejias y Javier Gimenez
 
 
 import sys
@@ -113,20 +113,19 @@ borrar_instancias() #borrar instancias
 ############################################################################
 
 
-# borrar una imagen 
-#guardamos una lista con todas las imágenes
+#Borrar todas las imagenes
 
-imagen = nova.images.list()
-x=0
-for i in imagen:
-    print '{0}  {1}'.format(x, i)
-    x=x+1
-
-#seleccionamos la imagen
-num=raw_input ('Selecione el número de la imagen a borrar')
-#borramos la imagen
-nova.images.delete(nova.images.list()[num])
-
+Borrartodas = nova.images.list()
+        if leng(Borrartodas) == 0:
+                print "No hay imagenes que borrar"
+        else:
+                for imagen in Borrartodas:
+                        try:
+                                nova.images.delete(imagen)
+                        except:
+                                print "No tienes permisos para borrar la imagen"
+                                
+#No hemos encontrado la forma de relacionar la imagen con un usuario en concreto, asi que hemos utilizado un try para controlar el error en medida de lo posible.
 
 #para borrar un grupo de seguridad
 def borrar_grupos():
