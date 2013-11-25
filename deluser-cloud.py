@@ -262,4 +262,16 @@ def borrar_reglas():
 	   reglas = grupo.rules
 	   for i in xrange(0,int(len(reglas))):
 	       nova.security_group_rules.delete(reglas[i]["id"])
+	       
+#Borrar proyecto
+
+def borrar_proyecto():
+        nombreproyectoaborrar=nova.project_id
+
+if nombreproyectoaborrar:
+        keystone.tenants.delete(nombreproyectoaborrar)
+else:
+        print "No hay ningun proyecto definido"
+	       
+
 
