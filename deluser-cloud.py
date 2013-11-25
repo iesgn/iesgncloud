@@ -242,7 +242,8 @@ if x==0:
 else:
     for i in range(x): 
         cinder.volume_snapshots.delete(cinder.volume_snapshots.list()[i]))
-		print "Eliminada el snapshot del volumen %s" %
+		print "Eliminado el snapshot del volumen %s" %
+
 
 #Borrar usuario 
 
