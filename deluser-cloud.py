@@ -244,6 +244,15 @@ else:
         cinder.volume_snapshots.delete(cinder.volume_snapshots.list()[i]))
 		print "Eliminado el snapshot del volumen %s" %
 
+#Borrar proyecto
+
+def borrar_proyecto():
+        nombreproyectoaborrar=nova.project_id
+
+if nombreproyectoaborrar:
+        keystone.tenants.delete(nombreproyectoaborrar)
+else:
+        print "No hay ningun proyecto definido"
 
 #Borrar usuario 
 
@@ -263,15 +272,7 @@ def borrar_reglas():
 	   for i in xrange(0,int(len(reglas))):
 	       nova.security_group_rules.delete(reglas[i]["id"])
 	       
-#Borrar proyecto
 
-def borrar_proyecto():
-        nombreproyectoaborrar=nova.project_id
-
-if nombreproyectoaborrar:
-        keystone.tenants.delete(nombreproyectoaborrar)
-else:
-        print "No hay ningun proyecto definido"
 	       
 
 
