@@ -258,13 +258,14 @@ else:
 
 def borrar_usuario():
 	for usuario in keystone.users.list():
-	if usuario.name == user:
-		 exists = True
-	else
-		break
+		if usuario.name == user:
+			 exists = True
+		else
+			break
 	if exists == True:	
 		print "Borrando usuario"
 		keystone.users.delete(user)
+
 # borrar reglas de los grupos de seguridad
 
 def borrar_reglas():
