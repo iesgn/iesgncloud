@@ -24,11 +24,10 @@
 import sys
 from getpass import getpass
 import ConfigParser
-from keystoneclient.v2_0 import client as keystonec
 from novaclient.v1_1 import client as novac
 from cinderclient import client as cinderc
 from quantumclient.v2_0 import client as quantumc
-
+from keystoneclient.v2_0 import keystonec
 # con el usuario bisharron podemos usar la api de forma estatica
 # solo con este usuario
 
@@ -51,6 +50,10 @@ cinder = cinderc.Client(username = user,
                     api_key = password,
                     project_id = tenant,
                     auth_url = keystoneurl)
+
+keystone = keystonec.Client(username = user,
+                      password = password,
+                      auth_url = keystoneurl)
 
 
 if len(sys.argv) == 2:
@@ -222,10 +225,6 @@ def borrar_IPs_flotantes():
 
 #Borrar usuario 
 
-from keystoneclient.v2_0 import keystonec
-keystone = keystonec.Client(username = user,
-                      password = password,
-                      auth_url = keystoneurl)
 del_user = keystone.users.delete(user)
 
 
