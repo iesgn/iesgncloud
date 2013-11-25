@@ -4,7 +4,7 @@
 #Eliminar todas las instanacias del usuario (Javier Giménez  ) Listo #
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz) 
 #Eliminar todos los volumenes del usuario (Adrian Cid Ramos) #
-#Eliminar todas las instancias de voumenes del usuario (Jose Alejandro Perea García) #
+#Eliminar todas las instantaneas de voumenes del usuario (Jose Alejandro Perea García) #
 #Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) Completada
 #Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) Completada
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
@@ -20,6 +20,7 @@ from getpass import getpass
 import ConfigParser
 from novaclient.v1_1 import client as novac
 from cinderclient import client as cinderc
+from cinderclient.v1 import client
 from quantumclient.v2_0 import client as quantumc
 from keystoneclient.v2_0 import client as keystonec
 # con el usuario bisharron podemos usar la api de forma estatica
@@ -48,6 +49,12 @@ cinder = cinderc.Client(username = user,
 keystone = keystonec.Client(username = user,
                       password = password,
                       auth_url = keystoneurl)
+                      
+nt = client.Client(user, 
+		 password, 
+		 tenant, 
+		 keystoneurl, 
+		 service_type="volume")
 
 
 if len(sys.argv) == 2:
@@ -92,8 +99,9 @@ borrar_pares_de_claves# borrar pares de claves
 # borrar redes y sub redes
 borrar_IPs_flotantes()# borrar ip flotantes
 # Borrar snaptshots
-# borrar isntancias de volúmenes
 # borrar volumenes
+# borrar isntancias de volúmenes
+borrar_instantaneasvolumen()
 # borrar imágenes ###########   falta por asignar    ##########
 borrar_instancias() #borrar instancias
 # borrar proyecto
@@ -143,13 +151,12 @@ def borrar_instancias():
 
 #Eliminar todas las instantaneas de volumenes del usuario
 def borrar_instantaneasvolumen():
-	listar=nova.volume_snapshots.list()
+	listar=nt.volume_snapshots.list()
 	if len(listar)==0:
 		print "El usuario no tiene ninguna instantanea de volumen"
 	else:
 		for i in listar: 
-			nova.volume_snapshots.delete(i)
-
+			nt.volume_snapshots.delete(i)
 
 #Esta parte funciona
 #Borra todos los pares de claves del usuario.
