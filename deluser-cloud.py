@@ -10,14 +10,8 @@
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
 #Borra todos los grupos de seguridad (Javier Giménez ) Listo
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-<<<<<<< HEAD
-#Borra el usuario del proyecto (Carlos Mejias) #
-#Borra el proyecto(Miguel Angel Martin Serrano) Listo #
-=======
 #Borra el usuario del proyecto (Miguel Angel Martin) 
 #Borra el proyecto(Carlos mejias) #
->>>>>>> c68a3d9d64e67a1bb82e140d8810f274f332f5c1
-
 #Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) #
 
 
