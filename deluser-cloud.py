@@ -221,7 +221,10 @@ def borrar_IPs_flotantes():
 # Borrar snaptshots
 
 	# Borrar snapshots de volumenes
-    
+
+def borrar_snapshos_volumenes():
+	volsnap=cinder.volume_snapshots.list()
+	
 for i in volsnap:
     print '{0}  {1}'.format(x, i)
     x=x+1
@@ -232,7 +235,7 @@ if x==0:
 else:
     for i in range(x): 
         cinder.volume_snapshots.delete(cinder.volume_snapshots.list()[i]))
-
+		print "Eliminada el snapshot del volumen %s" %
 
 #Borrar usuario 
 
