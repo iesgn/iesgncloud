@@ -253,12 +253,18 @@ if nombreproyectoaborrar:
         keystone.tenants.delete(nombreproyectoaborrar)
 else:
         print "No hay ningun proyecto definido"
-
+       
 #Borrar usuario 
 
 def borrar_usuario():
-	keystone.users.delete(user)
-
+	for usuario in keystone.users.list():
+	if usuario.name == user:
+		 exists = True
+	else
+		break
+	if exists == True:	
+		print "Borrando usuario"
+		keystone.users.delete(user)
 # borrar reglas de los grupos de seguridad
 
 def borrar_reglas():
