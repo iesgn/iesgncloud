@@ -216,6 +216,23 @@ def borrar_IPs_flotantes():
         for i in range(len(ipflota)): 
             nova.floating_ips.delete(ipflota[i].id)
             print "Eliminada la IP flotante %s" % ipflota[i].ip
+            
+            
+# Borrar snaptshots
+
+	# Borrar snapshots de volumenes
+    
+for i in volsnap:
+    print '{0}  {1}'.format(x, i)
+    x=x+1
+    
+if x==0:
+    print "No existen snapshot de volumenes"
+    
+else:
+    for i in range(x): 
+        cinder.volume_snapshots.delete(cinder.volume_snapshots.list()[i]))
+
 
 #Borrar usuario 
 
