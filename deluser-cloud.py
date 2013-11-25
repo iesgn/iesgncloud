@@ -1,17 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#Eliminar todas las instanacias del usuario (Javier Giménez  ) Listo #
+
+
+#Eliminar todas las instanacias del usuario (Javier Giménez  ) 
 #Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz) 
-#Eliminar todos los volumenes del usuario (Adrian Cid Ramos) #
-#Eliminar todas las instantaneas de voumenes del usuario (Jose Alejandro Perea García) #
-#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) Completada
-#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) Completada
+#Eliminar todos los volumenes del usuario (Adrian Cid Ramos) 
+#Eliminar todas las instantaneas de voumenes del usuario (Jose Alejandro Perea García) 
+#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) 
+#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) 
 #Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
-#Borra todos los grupos de seguridad (Javier Giménez ) Listo
+#Borra todos los grupos de seguridad (Javier Giménez ) 
 #Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
 #Borra el usuario del proyecto (Miguel Angel Martin) 
-#Borra el proyecto(Carlos mejias) #
+#Borra el proyecto(Carlos mejias) 
 #Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) # Carlos Mejias y Javier Gimenez
 
 
@@ -87,25 +89,7 @@ while len(admintoken) == 0:
         print "Invalid keystone username or password"
 
 
-###############################################################################
-# Orden en que llamaremos a las funciones pra realizar el boorado             #
-# Cuando esten listos los procedimiento id poniendolso en su sitio            #
-# Si se detecta algun error corregidolo cuando lo veais y dejad un comentario #
-###############################################################################
 
-borrar_reglas()# borrar reglas de los grupos de seguridad
-borrar_grupos()# borrar grupos de seguridad
-borrar_pares_de_claves# borrar pares de claves
-# borrar redes y sub redes
-borrar_IPs_flotantes()# borrar ip flotantes
-# Borrar snaptshots
-# borrar volumenes
-# borrar isntancias de volúmenes
-borrar_instantaneasvolumen()
-# borrar imágenes ###########   falta por asignar    ##########
-borrar_instancias() #borrar instancias
-# borrar proyecto
-# borrar usuario
 
 ############################################################################
 # a continuación  estan los metodos para borrar algunos de los elementos   #
@@ -114,18 +98,19 @@ borrar_instancias() #borrar instancias
 
 
 #Borrar todas las imagenes
-
-Borrartodas = nova.images.list()
-        if leng(Borrartodas) == 0:
-                print "No hay imagenes que borrar"
-        else:
-                for imagen in Borrartodas:
-                        try:
-                                nova.images.delete(imagen)
-                        except:
-                                print "No tienes permisos para borrar la imagen"
+def borrar_imagenes():
+	Borrartodas = nova.images.list()
+	if leng(Borrartodas) == 0:
+		print "No hay imagenes que borrar"
+	else:
+		for imagen in Borrartodas:
+			try:
+				nova.images.delete(imagen)
+			except:
+				print "No tienes permisos para borrar la imagen"
                                 
-#No hemos encontrado la forma de relacionar la imagen con un usuario en concreto, asi que hemos utilizado un try para controlar el error en medida de lo posible.
+#No hemos encontrado la forma de relacionar la imagen con un usuario en concreto, 
+#asi que hemos utilizado un try para controlar el error en medida de lo posible.
 
 #para borrar un grupo de seguridad
 def borrar_grupos():
@@ -136,7 +121,7 @@ def borrar_grupos():
 		for i in grupos:
 			nova.security_groups.delete(i)
 
-#Esta parte funciona
+
 #borra todas las instacias
 
 def borrar_instancias():
@@ -157,7 +142,6 @@ def borrar_instantaneasvolumen():
 		for i in listar: 
 			nt.volume_snapshots.delete(i)
 
-#Esta parte funciona
 #Borra todos los pares de claves del usuario.
 def borrar_pares_de_claves():
     keypairs=nova.keypairs.list()
@@ -180,9 +164,7 @@ def borrar_volumenes():
 	else i in range(len(listvol));
 		cinder.listvol.delete(i)
 		
-		
 # Borra todas las redes,subredes y routers del usuario
-
 
 def borrar_subredes():
 	lissub=quantum.list_subnets()
@@ -208,8 +190,6 @@ def borrar_routers():
 	else i in range(len(listrout)):
 		quantum.delete_router(quantum.routers[i][id])
 
-
-#Esta parte funciona
 #Liberar todas las ip flotantes del usuario
 
 def borrar_IPs_flotantes():
@@ -225,8 +205,7 @@ def borrar_IPs_flotantes():
             
             
 # Borrar snaptshots
-
-	# Borrar snapshots de volumenes
+# Borrar snapshots de volumenes
 
 def borrar_snapshos_volumenes():
 	volsnap=cinder.volume_snapshots.list()
@@ -277,8 +256,29 @@ def borrar_reglas():
 	   reglas = grupo.rules
 	   for i in xrange(0,int(len(reglas))):
 	       nova.security_group_rules.delete(reglas[i]["id"])
-	       
 
+###############################################################################
+# Orden en que llamaremos a las funciones pra realizar el boorado             #
+# Cuando esten listos los procedimiento id poniendolso en su sitio            #
+# Si se detecta algun error corregidolo cuando lo veais y dejad un comentario #
+###############################################################################
+
+	       
+borrar_reglas() # borrar reglas de los grupos de seguridad
+borrar_grupos() # borrar grupos de seguridad
+borrar_pares_de_claves# borrar pares de claves
+borrar_subredes()# borrar redes y sub redes
+borrar_redes()
+borrar_routers()
+borrar_IPs_flotantes() # borrar ip flotantes
+borrar_snapshos_volumenes() # Borrar snaptshots
+borrar_volumenes() # borrar volumenes
+borrar_instantaneasvolumen()# borrar isntancias de volúmenes
+borrar_instantaneasvolumen()
+borrar_imagenes()# borrar imágenes
+borrar_instancias() #borrar instancias
+borrar_proyecto() # borrar proyecto
+borrar_usuario()# borrar usuario
 	       
 
 
