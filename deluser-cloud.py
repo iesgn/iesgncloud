@@ -27,7 +27,7 @@ import ConfigParser
 from novaclient.v1_1 import client as novac
 from cinderclient import client as cinderc
 from quantumclient.v2_0 import client as quantumc
-from keystoneclient.v2_0 import keystonec
+from keystoneclient.v2_0 import client as keystonec
 # con el usuario bisharron podemos usar la api de forma estatica
 # solo con este usuario
 
@@ -225,6 +225,7 @@ def borrar_IPs_flotantes():
 
 #Borrar usuario 
 
-del_user = keystone.users.delete(user)
+def borrar_usuario():
+	keystone.users.delete(user)
 
 
