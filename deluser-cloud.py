@@ -159,9 +159,9 @@ def borrar_pares_de_claves():
 def borrar_volumenes():
 	listvol=cinder.volumes.list()
 	
-	if len(listvol)==0;
+	if len(listvol)==0:
 		print "No existen volumenes"
-	else i in range(len(listvol));
+	else i in range(len(listvol)):
 		cinder.listvol.delete(i)
 		
 # Borra todas las redes,subredes y routers del usuario
@@ -169,26 +169,29 @@ def borrar_volumenes():
 def borrar_subredes():
 	lissub=quantum.list_subnets()
 
-	if len(lissub)==0;
+	if len(lissub)==0:
 		print "No hay subredes que borrar"
-	else i in range(len(listsub)):
-		quantum.delete_subnet(quantum.subnets[i][id])
+	else: 
+		for i in range(len(listsub)):
+			quantum.delete_subnet(quantum.subnets[i][id])
 
 def borrar_redes():
 	lisreds=quantum.list_networks()
 
-	if len(lisreds)==0;
+	if len(lisreds)==0:
 		print "No hay redes que borrar"
-	else i in range(len(listreds)):
-		quantum.delete_network(quantum.networks[i][id])
+	else: 
+		for i in range(len(listreds)):
+			quantum.delete_network(quantum.networks[i][id])
 		
 def borrar_routers():
 	lisrout=quantum.list_routers()
 
-	if len(lisrout)==0;
+	if len(lisrout)==0:
 		print "No hay routers que borrar"
-	else i in range(len(listrout)):
-		quantum.delete_router(quantum.routers[i][id])
+	else:
+		for i in range(len(listrout)):
+			quantum.delete_router(quantum.routers[i][id])
 
 #Liberar todas las ip flotantes del usuario
 
