@@ -161,8 +161,9 @@ def borrar_volumenes():
 	
 	if len(listvol)==0:
 		print "No existen volumenes"
-	else i in range(len(listvol)):
-		cinder.listvol.delete(i)
+	else:
+		for i in range(len(listvol)):
+			cinder.listvol.delete(i)
 		
 # Borra todas las redes,subredes y routers del usuario
 
