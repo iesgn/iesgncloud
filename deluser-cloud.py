@@ -1,37 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
-
-#Eliminar todas las instanacias del usuario (Javier Giménez  ) 
-#Eliminar todos los snapshots del usuario (Miguel Ángel Ávila Ruiz) 
-#Eliminar todos los volumenes del usuario (Adrian Cid Ramos) 
-#Eliminar todas las instantaneas de voumenes del usuario (Jose Alejandro Perea García) 
-#Liberar todas las ip flotantes del usuario (Carlos Miguel Hernández Romero) 
-#Borra todos los pares de claves del usuario (Carlos Miguel Hernández Romero) 
-#Borra todas las reglas de todos los grupos de seguridad del usuario (Adrián Jiménez)
-#Borra todos los grupos de seguridad (Javier Giménez ) 
-#Borra todoas las redes,subredes y routers del usuario (Adrián Cid Ramos)
-#Borra el usuario del proyecto (Miguel Angel Martin) 
-#Borra el proyecto(Carlos mejias) 
-#Eliminar todas las imágenes del usuario (esta no la puso Alberto pero no esta de más hacerla) # Carlos Mejias y Javier Gimenez
-
-
 import sys
 from getpass import getpass
 import ConfigParser
 from novaclient.v1_1 import client as novac
 from cinderclient import client as cinderc
-from cinderclient.v1 import client
 from quantumclient.v2_0 import client as quantumc
 from keystoneclient.v2_0 import client as keystonec
-# con el usuario bisharron podemos usar la api de forma estatica
-# solo con este usuario
-
-tenant = "proy-bisharron"
-keystoneurl = "http://172.22.222.1:5000/v2.0"
-user = "bisharron"
-password = "asdasd"
 
 nova = novac.Client(username = user,
                     api_key = password,
@@ -48,17 +24,6 @@ cinder = cinderc.Client(username = user,
                     project_id = tenant,
                     auth_url = keystoneurl)
 
-keystone = keystonec.Client(username = user,
-                      password = password,
-                      auth_url = keystoneurl)
-                      
-nt = client.Client(user, 
-		 password, 
-		 tenant, 
-		 keystoneurl, 
-		 service_type="volume")
-
-
 if len(sys.argv) == 2:
     user = sys.argv[1]
     print "Deleting user %s to OpenStack" % user
@@ -70,7 +35,7 @@ else:
     if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
         sys.exit()
     user = "*"
-    print "deleting ALL users"
+    print "deleting ALL users and tenants except admin user an service tenant"
 
 # Getting auth token from keystone
 
@@ -88,6 +53,16 @@ while len(admintoken) == 0:
     except keystonec.exceptions.Unauthorized:
         print "Invalid keystone username or password"
 
+# Getting user list to delete
+if user == "*":
+    users_list = keystone.users.list()
+else:
+    users_list = [ keystone.users.find(name=user) ]
+
+# Getting tenants of each user:
+for tenant in keystone.tenants.list():
+    for tenant_user in tenant.list_users():
+        
 
 
 
