@@ -7,6 +7,7 @@ import ldap
 import ConfigParser
 from keystoneclient.v2_0 import client as keystonec
 from quantumclient.quantum import client as quantumc
+from credentials import get_keystone_creds
 
 if len(sys.argv) == 2:
     user = sys.argv[1]
@@ -60,19 +61,14 @@ if len(ldap_users) == 0:
     sys.exit()
     
 # Getting auth token from keystone
-admintoken = ''
-while len(admintoken) == 0:
-    adminuser = raw_input("Keystone admin user: ")
-    adminpass = getpass("Keystone admin user password: ")
-    try:
-        keystone = keystonec.Client(username=adminuser,
-                                    password=adminpass,
-                                    tenant_name=config.get("keystone","admintenant"),
-                                    auth_url=config.get("keystone","url"))
-        admintoken = keystone.auth_token
-        
-    except keystonec.exceptions.Unauthorized:
-        print "Invalid keystone username or password"
+creds = get_keystone_creds()
+try:
+    keystone = ksclient.Client(**creds)
+except keystonec.exceptions.Unauthorized:
+    print "Invalid keystone username or password"
+    sys.exit()
+
+admintoken = keystone.auth_token
 
 # Defining member role id
 for role in keystone.roles.list():
@@ -82,13 +78,12 @@ for role in keystone.roles.list():
 for member in ldap_users:
     username = member[1]["%s" % attrib_list[0]][0]
     # If user exists in keystone, user password is updated
-    exists = False
     for oldmember in keystone.users.list():
         if oldmember.name == username:
             new_passwd = member[1]["%s" % lista_atrib[2]][0]
             keystone.users.update_password(oldmember.id,new_passwd)
-            exists = True
-            break
+            sys.exit(0)
+
     # If user does not exist:
     # - user is created
     # - proy-username tenant is created
@@ -98,42 +93,42 @@ for member in ldap_users:
     # - a router is created in tenant proy-username
     # - router gateway is defined in a external network previously created
     # - router interface is created in subnet 10.0.0.0/24
-            
-    if exists == False:
-        newmember = keystone.users.create(username,
-                                           member[1]["%s" % attrib_list[2]][0],
-                                           member[1]["%s" % attrib_list[1]][0])
-        print "Creating new user with id %s" % newmember.id
-        newtenant = keystone.tenants.create("proy-%s" % username,
-                                             "proyecto de %s" % username)
-        print "Creating new tenant with id %s" % newtenant.id
-        keystone.roles.add_user_role(newmember.id,
-                                     member_role_id,
-                                     newtenant.id)
-        quantum = quantumc.Client('2.0',
-                                  endpoint_url=config.get("quantum","endpoint"),
-                                  token = keystone.auth_token)
-        quantum.format = 'json'
-        network = {'name':'red interna de %s' % username,
-                   'tenant_id': newtenant.id,
-                   'admin_state_up': True}
-        newnetwork = quantum.create_network({'network':network})
-        print "Creating new network with id %s" % newnetwork['network']['id']
-        subnet = {'network_id': newnetwork['network']['id'],
-                  'ip_version':4,
-                  'cidr':'10.0.0.0/24',
-                  'enable_dhcp': True,
-                   'tenant_id': newtenant.id,
-                  'dns_nameservers': ['%s' % config.get("quantum","dns_nameservers")]}
-        newsubnet = quantum.create_subnet({'subnet':subnet})
-        print "Creating new subnet with id %s" % newsubnet['subnet']['id']
-        router = {'name':'router de %s' % username,
-                  'tenant_id': newtenant.id,
-                  'external_gateway_info':{'network_id':
-                                           config.get("quantum","external_net_id")},
-                  'admin_state_up': True}
-        newrouter = quantum.create_router({'router':router})
-        print "Creating new router with id %s" % newrouter['router']['id']
-        quantum.add_interface_router(newrouter['router']['id'],
-                                     {'subnet_id': newsubnet['subnet']['id']})
-        print "Connecting router to subnet %s" % newsubnet['subnet']['id']
+    newmember = keystone.users.create(username,
+                                      member[1]["%s" % attrib_list[2]][0],
+                                      member[1]["%s" % attrib_list[1]][0])
+    print "Creating new user with id %s" % newmember.id
+    newtenant = keystone.tenants.create("proy-%s" % username,
+                                        "proyecto de %s" % username)
+    print "Creating new tenant with id %s" % newtenant.id
+    keystone.roles.add_user_role(newmember.id,
+                                 member_role_id,
+                                 newtenant.id)
+    quantum = quantumc.Client('2.0',
+                              endpoint_url=config.get("quantum","endpoint"),
+                              token = keystone.auth_token)
+    quantum.format = 'json'
+    network = {'name':'red interna de %s' % username,
+               'tenant_id': newtenant.id,
+               'admin_state_up': True}
+    newnetwork = quantum.create_network({'network':network})
+    print "Creating new network with id %s" % newnetwork['network']['id']
+    subnet = {'network_id': newnetwork['network']['id'],
+              'ip_version':4,
+              'cidr':'10.0.0.0/24',
+              'enable_dhcp': True,
+              'tenant_id': newtenant.id,
+              'dns_nameservers': ['%s' % config.get("quantum","dns_nameservers")]}
+    newsubnet = quantum.create_subnet({'subnet':subnet})
+    print "Creating new subnet with id %s" % newsubnet['subnet']['id']
+    router = {'name':'router de %s' % username,
+              'tenant_id': newtenant.id,
+              'external_gateway_info':{'network_id':
+                                       config.get("quantum","external_net_id")},
+              'admin_state_up': True}
+    newrouter = quantum.create_router({'router':router})
+    print "Creating new router with id %s" % newrouter['router']['id']
+    quantum.add_interface_router(newrouter['router']['id'],
+                                 {'subnet_id': newsubnet['subnet']['id']})
+    print "Connecting router to subnet %s" % newsubnet['subnet']['id']
+    sys.exit(0)
+    
