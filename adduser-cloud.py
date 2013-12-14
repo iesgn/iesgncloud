@@ -61,8 +61,8 @@ if len(ldap_users) == 0:
     sys.exit()
     
 # Getting auth token from keystone
-creds = get_keystone_creds()
 try:
+    creds = get_keystone_creds()
     keystone = ksclient.Client(**creds)
 except keystonec.exceptions.Unauthorized:
     print "Invalid keystone username or password"
@@ -82,6 +82,7 @@ for member in ldap_users:
         if oldmember.name == username:
             new_passwd = member[1]["%s" % lista_atrib[2]][0]
             keystone.users.update_password(oldmember.id,new_passwd)
+            print "Password of %s updated" % oldmember.name
             sys.exit(0)
 
     # If user does not exist:
