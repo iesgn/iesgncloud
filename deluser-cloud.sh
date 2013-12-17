@@ -35,3 +35,8 @@ else
 echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
 exit 0
 fi
+
+# obtener ID de un usuario
+id=`keystone user-list | grep $1 |awk '{print $2}'`
+#obtener tenant de un usuario vale si usuario solo tiene un tenant
+tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
