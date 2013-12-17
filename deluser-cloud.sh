@@ -42,3 +42,10 @@ id=`keystone user-list | grep $1 |awk '{print $2}'`
 tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
 #borrar proyecto
 keystone tenant-delete $tenant
+#creo un vector con los distintos proyectos del usuario
+tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+#borro todos los proyectos de un usuario
+for i in '${tenants[*]}';
+do
+	keystone tenant-delete $i;
+done
