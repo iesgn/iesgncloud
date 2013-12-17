@@ -22,7 +22,7 @@ then
 	#borrar_imagenes
 	#borrar_instancias
 	#borrar_proyecto
-	#borrar_usuario
+	#borrar_usuario(Miguel Angel Martin)
 	echo -e "\nDeleting user "$usuario"...."
 	keystone user-delete $1
 # Si no existe le indico a el usuario el problema
