@@ -21,3 +21,4 @@ echo -e "\nDeleting user "$usuario"...."
 #borrar_instancias
 #borrar_proyecto
 #borrar_usuario
+keystone user-delete $1
