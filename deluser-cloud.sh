@@ -8,9 +8,8 @@ if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario	
 then
 	source /openrc.sh
-	#Pasos que necesitamos en este programa(Cada uno ya sabe que hizo en deluser-cloud.py)
-	#borrar_reglas
-	#borrar_grupos
+	#Pasos que necesitamos en este programa(Asignarselos)
+	#borrar_grupos(Adrian Jimenez Blanes)
 	#borrar_pares_de_claves
 	#borrar_subredes
 	#borrar_redes
