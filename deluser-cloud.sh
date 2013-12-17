@@ -40,3 +40,5 @@ fi
 id=`keystone user-list | grep $1 |awk '{print $2}'`
 #obtener tenant de un usuario vale si usuario solo tiene un tenant
 tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
+#borrar proyecto
+keystone tenant-delete $tenant
