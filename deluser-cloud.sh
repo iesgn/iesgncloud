@@ -24,7 +24,7 @@ then
 	#borrar_proyecto
 	#borrar_usuario(Miguel Angel Martin)
 	echo -e "\nDeleting user "$usuario"...."
-	keystone user-delete $1
+	keystone user-delete $usuario
 # Si no existe le indico a el usuario el problema
 else
 echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
