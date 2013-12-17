@@ -1,7 +1,7 @@
 #!/bin/bash
 #Definir la variable usuario con el nombre de usuario en el argumento 1 del programa
 usuario=$1
-#Guardo la ubicación del fichero en la variable archivo por si la necesito más alante
+#Guardo la ubicación del fichero en la variable archivo por si la necesito más adelante
 archivo=/openrc.sh
 #Compruebo si existe
 if [ -e $archivo ]
