@@ -9,7 +9,12 @@ if [ -e $archivo ]
 then
 	source /openrc.sh
 	#Pasos que necesitamos en este programa(Asignarselos)
-	#borrar_grupos(Adrian Jimenez Blanes)
+	#borrar_grupos(Adrian Jimenez Blanes) -- Da un error cuando intentamos borrar un grupo 
+	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
+	for i in `nova secgroup-list |grep -v ^\+|grep -v Name| awk '{print $2}'`; 
+	do `nova secgroup-delete $i` ; 
+	done
+
 	#borrar_pares_de_claves
 	#borrar_subredes
 	#borrar_redes
