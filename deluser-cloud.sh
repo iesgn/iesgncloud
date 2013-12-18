@@ -44,7 +44,11 @@ then
 	#borrar_imagenes
 	#borrar_instancias
 	#borrar_proyecto(Fracnisco Javier Gimenez)
-	borra_tenant()
+	#borro todos los proyectos de un usuario
+	for i in '${tenants[*]}';
+	do
+		keystone tenant-delete $i;
+	done
 	#borrar_usuario(Miguel Angel Martin)
 	echo -e "\nDeleting user "$usuario"...."
 	keystone user-delete $usuario
@@ -53,18 +57,3 @@ else
 	echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
 	exit 0
 fi
-
-function borra_tenant():
-	#Estas lienas de código estan pendientes de confirmar la estrucatura del
-	#programa
-
-	#obtener tenant de un usuario vale si usuario solo tiene un tenant
-	tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
-	#borrar proyecto
-	keystone tenant-delete $tenant
-	
-	#borro todos los proyectos de un usuario
-	for i in '${tenants[*]}';
-	do
-		keystone tenant-delete $i;
-	done
