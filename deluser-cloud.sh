@@ -6,37 +6,33 @@ usuario=$1
 archivo=/openrc.sh
 #Compruebo si existe
 if [ -e $archivo ]
-# Si existe lo cargo y procedo a eliminar el usuario	
+# Si existe lo cargo y procedo a eliminar el usuario
 then
 	source /openrc.sh
-	
-	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo 
+
+	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
-	#borrar_grupos(Adrian Jimenez Blanes) 
-	for i in `nova secgroup-list |grep -v ^\+|grep -v Name| awk '{print $2}'`; 
-	do `nova secgroup-delete $i` ; 
+
+	#borrar_grupos(Adrian Jimenez Blanes)
+	for i in `nova secgroup-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
+	do `nova secgroup-delete $i` ;
 	done
-	
-#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
-    for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
-    do `nova keypair-delete $i` ;
-    echo "Eliminada el par de claves" $i
-    done
 
+	#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
+    	for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
+	do `nova keypair-delete $i` ;
+    	echo "Eliminada el par de claves" $i
+    	done
 
-
-	
-#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
-    for i in `nova floating-ip-list |grep -v ^\+|grep -v Ip| awk '{print $2}'`;
-    do `nova floating-ip-delete $i` ;
-    echo "Eliminada la IP flotante" $i
-    done
-
-
+	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
+    	for i in `nova floating-ip-list |grep -v ^\+|grep -v Ip| awk '{print $2}'`;
+    	do `nova floating-ip-delete $i` ;
+    	echo "Eliminada la IP flotante" $i
+    	done
 
         #borrar_subredes
 	#borrar_redes
-	#borrar_routers  
+	#borrar_routers
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
 	#borrar_instantaneasvolumen
@@ -45,7 +41,6 @@ then
 	#borrar_instancias
 	#borrar_proyecto(Fracnisco Javier Gimenez)
 	borra_tenant()
-
 	#borrar_usuario(Miguel Angel Martin)
 	echo -e "\nDeleting user "$usuario"...."
 	keystone user-delete $usuario
