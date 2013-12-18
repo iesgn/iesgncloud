@@ -34,9 +34,9 @@ then
 		echo "Eliminada la IP flotante" $i
 	done
 
-        #borrar_subredes
-	#borrar_redes
-	#borrar_routers
+        #borrar_subredes(Adrián Cid)
+	#borrar_redes(Adrián Cid)
+	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
