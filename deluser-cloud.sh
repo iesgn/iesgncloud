@@ -34,14 +34,20 @@ then
 		echo "Eliminada la IP flotante" $i
 	done
 
-        #borrar_subredes(Adrián Cid)
+    #borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
 	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	#borrar_imagenes
-	#borrar_instancias
+	
+	#borrar_instancias(Fracnisco Javier Gimenez)
+	for i in nova list | grep -v ^\+|grep -v ID | awk '{print $2}';
+	do 
+		nova delete $i;
+	done	
+	
 	#borrar_proyecto(Fracnisco Javier Gimenez)
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
