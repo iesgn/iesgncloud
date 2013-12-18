@@ -17,7 +17,7 @@ then
 	do `nova secgroup-delete $i` ; 
 	done
 	
-#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)
+#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
     for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
     do `nova keypair-delete $i` ;
     echo "Eliminada el par de claves" $i
@@ -25,16 +25,18 @@ then
 
 
 
+	
+#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
+    for i in `nova floating-ip-list |grep -v ^\+|grep -v Ip| awk '{print $2}'`;
+    do `nova floating-ip-delete $i` ;
+    echo "Eliminada la IP flotante" $i
+    done
 
 
 
-
-
-
-	#borrar_subredes
+        #borrar_subredes
 	#borrar_redes
-	#borrar_routers
-	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)
+	#borrar_routers  
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
 	#borrar_instantaneasvolumen
