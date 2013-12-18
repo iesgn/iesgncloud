@@ -9,7 +9,10 @@ if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario
 then
 	source /openrc.sh
-
+	# obtener ID de un usuario 
+	id=`keystone user-list | grep $1 |awk '{print $2}'`
+		
+	
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
 
@@ -53,8 +56,7 @@ fi
 function borra_tenant():
 	#Estas lienas de código estan pendientes de confirmar la estrucatura del
 	#programa
-	# obtener ID de un usuario 
-	id=`keystone user-list | grep $1 |awk '{print $2}'`
+
 	#obtener tenant de un usuario vale si usuario solo tiene un tenant
 	tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
 	#borrar proyecto
