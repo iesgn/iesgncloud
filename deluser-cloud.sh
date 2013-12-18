@@ -52,6 +52,7 @@ then
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
 	do
+		nova scrub $i;
 		keystone tenant-delete $i;
 	done
 	#borrar_usuario(Miguel Angel Martin)
