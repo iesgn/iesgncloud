@@ -39,8 +39,7 @@ then
 	#borrar_routers
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
-	#borrar_instantaneasvolumen
-	#borrar_instantaneasvolumen
+	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	#borrar_imagenes
 	#borrar_instancias
 	#borrar_proyecto(Fracnisco Javier Gimenez)
