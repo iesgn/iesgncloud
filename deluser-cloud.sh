@@ -11,7 +11,8 @@ then
 	source /openrc.sh
 	# obtener ID de un usuario 
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
-		
+	#creo un vector con los proyectos del usuario
+	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)	
 	
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
@@ -61,8 +62,7 @@ function borra_tenant():
 	tenant=`keystone tenant-list | grep $1 | awk '{print $2}'`
 	#borrar proyecto
 	keystone tenant-delete $tenant
-	#creo un vector con los proyectos del usuario
-	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+	
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
 	do
