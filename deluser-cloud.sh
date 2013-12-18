@@ -17,11 +17,24 @@ then
 	do `nova secgroup-delete $i` ; 
 	done
 	
-	#borrar_pares_de_claves
+#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)
+    for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
+    do `nova keypair-delete $i` ;
+    echo "Eliminada el par de claves" $i
+    done
+
+
+
+
+
+
+
+
+
 	#borrar_subredes
 	#borrar_redes
 	#borrar_routers
-	#borrar_IPs_flotantes
+	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)
 	#borrar_snapshos_volumenes
 	#borrar_volumenes
 	#borrar_instantaneasvolumen
