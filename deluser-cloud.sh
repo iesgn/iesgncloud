@@ -8,15 +8,15 @@ archivo=/openrc.sh
 if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario
 then
-	#Borrar usuario
+	#Carcargar variables de entorno
 	source /openrc.sh
+	# obtener ID de un usuario
+        id=`keystone user-list | grep $1 |awk '{print $2}'`
+        #creo un vector con los proyectos del usuario
+        tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+	#Borrar usuario
 	echo -e "\nDeleting user "$usuario"...."
         keystone user-delete $usuario
-	# obtener ID de un usuario
-	id=`keystone user-list | grep $1 |awk '{print $2}'`
-	#creo un vector con los proyectos del usuario
-	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
-
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
 
