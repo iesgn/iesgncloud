@@ -8,7 +8,10 @@ archivo=/openrc.sh
 if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario
 then
+	#Borrar usuario
 	source /openrc.sh
+	echo -e "\nDeleting user "$usuario"...."
+        keystone user-delete $usuario
 	# obtener ID de un usuario
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
@@ -57,7 +60,7 @@ then
 	done
 	#borrar_imagenes (Carlos Mejías)
 	for i in `nova image-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
-	do	
+	do
 		`nova image-delete $i`;
 		echo "Eliminada la imagen" $i
 	done
@@ -75,9 +78,6 @@ then
 		`nova scrub $i;`
 		`keystone tenant-delete $i;`
 	done
-	#borrar_usuario(Miguel Angel Martin)
-	echo -e "\nDeleting user "$usuario"...."
-	keystone user-delete $usuario
 # Si no existe le indico a el usuario el problema
 else
 	echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
