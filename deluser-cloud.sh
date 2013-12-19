@@ -41,7 +41,7 @@ then
                 do `quantum router-delete $i` ;
                 echo "Eliminanando router: " $i
         done
-	#borrar_volumenes (Carlos Mejías)
+	#borrar_volumenes 
 	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
 
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
@@ -55,7 +55,7 @@ then
 		`cinder snapshot-delete $i`;
 		echo "Eliminadas las instantaneas de volumenes"
 	done
-	#borrar_imagenes
+	#borrar_imagenes (Carlos Mejías)
 	for i in `nova image-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
 	do	
 		`nova image-delete $i`;
