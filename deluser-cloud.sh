@@ -12,7 +12,26 @@ then
 	# obtener ID de un usuario 
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
-	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)	
+	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)	
+	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)	
+	
+	for id_tenant in tenants_id;
+		do
+			cont = 0
+			for id_user in users_id;
+				keystone role-list --user-id $id_user --tenant-id $id_tenant
+				[ $? = 0] cont = cont + 1
+			done
+		
+		
+		
+		
+		done
+	
+	
+	
+	
+	
 	
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
