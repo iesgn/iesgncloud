@@ -28,7 +28,7 @@ tenant = keystone.tenants.find(name=tenant_name)
     
 for router in quantum.list_routers(tenant_id=tenant.id)["routers"]:
     quantum.remove_gateway_router(router["id"])
-    for port in quantum.list_ports(tenant_id)tenant.id)["ports"]:
+    for port in quantum.list_ports(tenant_id=tenant.id)["ports"]:
         if port["device_id"] == router["id"]:
             quantum.remove_interface_router(router["id"],{port_id=port["id"]})
             quantum.delete_router(router["id"])
