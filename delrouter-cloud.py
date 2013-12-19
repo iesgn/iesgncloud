@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import ConfigParser
 from quantumclient.v2_0 import client as quantumc
 from keystoneclient.v2_0 import client as keystonec
 from credentials import get_keystone_creds
@@ -12,6 +13,9 @@ if len(sys.argv) == 2:
 else:
     print "You must provide tenant_name"
     sys.exit()
+
+config = ConfigParser.ConfigParser()
+config.read("adduser-cloud.conf")
 
 # Getting auth token from keystone
 try:
