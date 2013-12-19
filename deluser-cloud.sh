@@ -23,6 +23,7 @@ then
 	#borrar_grupos(Adrian Jimenez Blanes)
 	for i in `nova secgroup-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
 		do `nova secgroup-delete $i` ;
+		echo "Eliminado el grupo de seguridad: "$i
 	done
 
 	#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
