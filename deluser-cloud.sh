@@ -37,6 +37,10 @@ then
 	#borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
 	#borrar_routers(Miguel Angel Martin Serrano)
+	for i in `quantum router-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+                do `quantum router-delete $i` ;
+                echo "Eliminanando router: " $i
+        done
 	#borrar_volumenes (Carlos Mejías)
 	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
 
