@@ -38,7 +38,8 @@ then
 	#borrar_redes(Adrián Cid)
 	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
 	#borrar_volumenes
-	#borrar_snapshots
+	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
+	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	for i in `cinder snapshot-list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
 	do 
