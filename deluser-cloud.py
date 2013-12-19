@@ -35,23 +35,15 @@ else:
     if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
         sys.exit()
     user = "*"
-    print "deleting ALL users and tenants except admin user an service tenant"
+    print "deleting ALL users and tenants except admin user and service tenant"
 
 # Getting auth token from keystone
-
-admintoken = ''
-while len(admintoken) == 0:
-    adminuser = raw_input("Keystone admin user: ")
-    adminpass = getpass("Keystone admin user password: ")
-    try:
-        keystone = keystonec.Client(username=adminuser,
-                                    password=adminpass,
-                                    tenant_name=config.get("keystone","admintenant"),
-                                    auth_url=config.get("keystone","url"))
-        admintoken = keystone.auth_token
-        
-    except keystonec.exceptions.Unauthorized:
-        print "Invalid keystone username or password"
+try:
+    creds = get_keystone_creds()
+    keystone = ksclient.Client(**creds)
+except keystonec.exceptions.Unauthorized:
+    print "Invalid keystone username or password"
+    sys.exit()
 
 # Getting user list to delete
 if user == "*":
