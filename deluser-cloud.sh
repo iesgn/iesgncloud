@@ -26,7 +26,7 @@ then
 	#Carcargar variables de entorno
 	source /openrc.sh
 
-	# obtener ID de un usuario 
+	# obtener ID de un usuario
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
 	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
@@ -39,9 +39,9 @@ then
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
 				[ $? = 0] cont = cont + 1
 			done
-			if cont>1 
+			if cont>1
 				borrar_routers();
-
+				#Meted aqui las llamadas a las funciones
 
 		done
 
@@ -50,7 +50,7 @@ then
 
 
 
-
+#Crear funciones al principio del documento y llamarlas donde esta indicado
 	# obtener ID de un usuario
         id=`keystone user-list | grep $1 |awk '{print $2}'`
         #creo un vector con los proyectos del usuario
