@@ -1,5 +1,20 @@
 #!/bin/bash
 
+#definir funcion borrar routers(Miguel Angel Martin Serrano)
+function borrar_routers(){
+echo "Borrando router del usuario"
+	for routerid in `quantum router-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+        	tenant_router=`quantum router-show $routerid | grep tenant_id | awk '{print $4}'` ;
+        	if tenant_router=id_tenant     
+                then
+                        do `quantum router-delete $routerid`;
+                        echo "Eliminanando router: " $routerid
+                else
+                        echo "No se borra router: " $routerid
+                fi
+        done
+}
+
 #Definir la variable usuario con el nombre de usuario en el argumento 1 del programa
 usuario=$1
 #Guardo la ubicación del fichero en la variable archivo por si la necesito más adelante
@@ -14,9 +29,9 @@ then
 	# obtener ID de un usuario 
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
-	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)	
-	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)	
-	
+	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
+	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
+
 	for id_tenant in tenants_id;
 		do
 			cont = 0
@@ -24,17 +39,17 @@ then
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
 				[ $? = 0] cont = cont + 1
 			done
-		
-		
-		
-		
+			if cont>1 
+				borrar_routers();
+
+
 		done
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 	# obtener ID de un usuario
         id=`keystone user-list | grep $1 |awk '{print $2}'`
