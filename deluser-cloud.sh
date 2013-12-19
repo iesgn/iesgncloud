@@ -9,11 +9,11 @@ if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario
 then
 	source /openrc.sh
-	# obtener ID de un usuario 
+	# obtener ID de un usuario
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
-	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)	
-	
+	tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
 
@@ -34,12 +34,12 @@ then
 		echo "Eliminada la IP flotante" $i
 	done
 
-    #borrar_subredes(Adrián Cid)
+	#borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
-	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
+	#borrar_routers(Miguel Angel Martin Serrano)
 	#borrar_volumenes (Carlos Mejías)
 	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
-	
+
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	for i in `nova volume-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
 		do `nova volume-delete $i` ;
@@ -47,18 +47,18 @@ then
 	done
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	for i in `cinder snapshot-list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
-	do 
+	do
 		`cinder snapshot-delete $i`;
 		echo "Eliminadas las instantaneas de volumenes"
 	done
 	#borrar_imagenes
-	
+
 	#borrar_instancias(Fracnisco Javier Gimenez)
 	for i in `nova list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
-	do 
+	do
 		`nova delete $i;`
-	done	
-	
+	done
+
 	#borrar_proyecto(Fracnisco Javier Gimenez)
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
