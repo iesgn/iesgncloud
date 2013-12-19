@@ -34,11 +34,12 @@ then
 		echo "Eliminada la IP flotante" $i
 	done
 
-    	#borrar_subredes(Adrián Cid)
+    #borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
 	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
 	#borrar_volumenes
 	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
+	
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	for i in `nova volume-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
 		do `nova volume-delete $i` ;
@@ -53,17 +54,17 @@ then
 	#borrar_imagenes
 	
 	#borrar_instancias(Fracnisco Javier Gimenez)
-	for i in nova list | grep -v ^\+|grep -v ID | awk '{print $2}';
+	for i in `nova list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
 	do 
-		nova delete $i;
+		`nova delete $i;`
 	done	
 	
 	#borrar_proyecto(Fracnisco Javier Gimenez)
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
 	do
-		nova scrub $i;
-		keystone tenant-delete $i;
+		`nova scrub $i;`
+		`keystone tenant-delete $i;`
 	done
 	#borrar_usuario(Miguel Angel Martin)
 	echo -e "\nDeleting user "$usuario"...."
