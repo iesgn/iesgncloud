@@ -37,7 +37,7 @@ then
     #borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
 	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
-	#borrar_instantaneasInstancias
+	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	#borrar_imagenes
