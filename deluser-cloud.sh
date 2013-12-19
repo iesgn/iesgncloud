@@ -42,7 +42,7 @@ then
                 echo "Eliminanando router: " $i
         done
 	#borrar_volumenes 
-	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
+	#borrar_instantaneasInstancias
 
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	for i in `nova volume-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
