@@ -3,7 +3,7 @@
 
 import sys
 import ConfigParser
-from quantumclient.v2_0 import client as quantumc
+from quantumclient.quantum import client as quantumc
 from keystoneclient.v2_0 import client as keystonec
 from credentials import get_keystone_creds
 
