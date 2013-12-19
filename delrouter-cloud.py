@@ -16,7 +16,7 @@ else:
 # Getting auth token from keystone
 try:
     creds = get_keystone_creds()
-    keystone = ksclient.Client(**creds)
+    keystone = keystonec.Client(**creds)
 except keystonec.exceptions.Unauthorized:
     print "Invalid keystone username or password"
     sys.exit()
