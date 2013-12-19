@@ -22,7 +22,9 @@ then
 			cont = 0
 			for id_user in users_id;
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
-				[ $? = 0] cont = cont + 1
+				if [ $? -eq 0 ]; then
+				 cont = cont + 1
+				 fi
 			done
 		
 		
