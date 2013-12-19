@@ -30,7 +30,12 @@ quantum = quantumc.Client('2.0',
                           token = keystone.auth_token)
    
 tenant = keystone.tenants.find(name=tenant_name)
-    
+
+# Disassociate all floating IPs from given tenant:
+for fip in quantum.list_floatingips(tenant_id=tenant.id)["floatingips"]:
+    quantum.update_floatingip(fip["id"],{"floatingip":{"port_id": null}})
+
+# Remove all routers
 for router in quantum.list_routers(tenant_id=tenant.id)["routers"]:
     quantum.remove_gateway_router(router["id"])
     for port in quantum.list_ports(tenant_id=tenant.id)["ports"]:
