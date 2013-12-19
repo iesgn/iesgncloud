@@ -8,7 +8,9 @@ archivo=/openrc.sh
 if [ -e $archivo ]
 # Si existe lo cargo y procedo a eliminar el usuario
 then
+	#Carcargar variables de entorno
 	source /openrc.sh
+
 	# obtener ID de un usuario 
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	#creo un vector con los proyectos del usuario
@@ -33,12 +35,22 @@ then
 	
 	
 	
+
+	# obtener ID de un usuario
+        id=`keystone user-list | grep $1 |awk '{print $2}'`
+        #creo un vector con los proyectos del usuario
+        tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+	#Borrar usuario
+	echo -e "\nDeleting user "$usuario"...."
+        keystone user-delete $usuario
+
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
 
 	#borrar_grupos(Adrian Jimenez Blanes)
 	for i in `nova secgroup-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
 		do `nova secgroup-delete $i` ;
+		echo "Eliminado el grupo de seguridad: "$i
 	done
 
 	#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
@@ -53,12 +65,16 @@ then
 		echo "Eliminada la IP flotante" $i
 	done
 
-    #borrar_subredes(Adrián Cid)
+	#borrar_subredes(Adrián Cid)
 	#borrar_redes(Adrián Cid)
-	#borrar_routers(Adrián Cid)(Si alguien la quiere que lo ponga aqui)
-	#borrar_volumenes (Carlos Mejías)
-	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
-	
+	#borrar_routers(Miguel Angel Martin Serrano)
+	for i in `quantum router-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+                do `quantum router-delete $i` ;
+                echo "Eliminanando router: " $i
+        done
+	#borrar_volumenes 
+	#borrar_instantaneasInstancias
+
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
 	for i in `nova volume-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
 		do `nova volume-delete $i` ;
@@ -66,18 +82,23 @@ then
 	done
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	for i in `cinder snapshot-list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
-	do 
+	do
 		`cinder snapshot-delete $i`;
 		echo "Eliminadas las instantaneas de volumenes"
 	done
-	#borrar_imagenes
-	
+	#borrar_imagenes (Carlos Mejías)
+	for i in `nova image-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
+	do
+		`nova image-delete $i`;
+		echo "Eliminada la imagen" $i
+	done
+
 	#borrar_instancias(Fracnisco Javier Gimenez)
 	for i in `nova list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
-	do 
+	do
 		`nova delete $i;`
-	done	
-	
+	done
+
 	#borrar_proyecto(Fracnisco Javier Gimenez)
 	#borro todos los proyectos de un usuario
 	for i in '${tenants[*]}';
@@ -85,9 +106,6 @@ then
 		`nova scrub $i;`
 		`keystone tenant-delete $i;`
 	done
-	#borrar_usuario(Miguel Angel Martin)
-	echo -e "\nDeleting user "$usuario"...."
-	keystone user-delete $usuario
 # Si no existe le indico a el usuario el problema
 else
 	echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
