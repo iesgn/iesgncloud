@@ -4,6 +4,7 @@
 import sys
 from quantumclient.v2_0 import client as quantumc
 from keystoneclient.v2_0 import client as keystonec
+from credentials import get_keystone_creds
 
 if len(sys.argv) == 2:
     tenant_name = sys.argv[1]
