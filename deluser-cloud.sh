@@ -40,6 +40,10 @@ then
 	#borrar_volumenes
 	#borrar_instantaneasInstancias(Miguel Angel Ávila Ruiz)
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
+	for i in `nova volume-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
+		do `nova volume-delete $i` ;
+		echo "Eliminado el volumen " $i
+	done
 	#borrar_instantaneasvolumen(Jose Alejandro Perea)
 	for i in `cinder snapshot-list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
 	do 
