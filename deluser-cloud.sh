@@ -56,7 +56,7 @@ then
 		echo "Eliminadas las instantaneas de volumenes"
 	done
 	#borrar_imagenes
-	for i in `nova image-list |grep -v ^\+|grep -v Ip| awk '{print $2}'`;
+	for i in `nova image-list |grep -v ^\+|grep -v ID| awk '{print $2}'`;
 	do	
 		`nova image-delete $i`;
 		echo "Eliminada la imagen" $i
