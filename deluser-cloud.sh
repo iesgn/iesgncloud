@@ -8,7 +8,7 @@ echo "Borrando router del usuario"
         	tenant_router=`quantum router-show $routerid | grep tenant_id | awk '{print $4}'` ;
         	if tenant_router=id_tenant     
                 then
-                        quantum router-delete $routerid`;
+                        `quantum router-delete $routerid`;
                         echo "Eliminanando router: " $routerid
                 else
                         echo "No se borra router: " $routerid
@@ -16,14 +16,12 @@ echo "Borrando router del usuario"
 			done
 }
 
-
 	#borrar_instancias(Fracnisco Javier Gimenez)
 function borrar_instancia(){
 
-	for i in `nova list --all-tenants| grep -v ^\+|grep -v ID | awk '{print $2}'`;#recorremos todas las instancias
-	do
+	for i in `nova list --all-tenants| grep -v ^\+|grep -v ID | awk '{print $2}'`;	do
 		tnt_id = `nova show $i | grep tenant_id | awk '{print $4}';`# sacamos tenant de la instancia
-		if [ $tnt_id -eq $id_tenant ];# si coinciden tenants borramos
+		if [ $tnt_id -eq $id_tenant ]; then # si coinciden tenants borramos
 			`nova delete $i`
 		fi
 	done
@@ -34,7 +32,6 @@ function borrar_tenant();{
 	`nova scrub $id_tenant;`
 	`keystone tenant-delete $id_tenant;`
 }
-
 
 	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
 function borrar_ipflotante(){
@@ -52,8 +49,6 @@ function borrar_ipflotante(){
         done
 }
 
-
-
 #Definir la variable usuario con el nombre de usuario en el argumento 1 del programa
 usuario=$1
 #Guardo la ubicación del fichero en la variable archivo por si la necesito más adelante
@@ -64,57 +59,50 @@ if [ -e $archivo ]
 then
 	#Carcargar variables de entorno
 	source /openrc.sh
-
 	# obtener ID de un usuario
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
 	# Vector con todos los ID de proyectos
 	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
 	# Vector con todos los ID de usuarios
 	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
-	
 	# Creo una lista con los tenants del usuario que deseamos borrar
 	cont = 0;
-	for idt in tenanats_id;
-		do
+	for idt in tenanats_id; do
 			keystone role-list --user-id $id --tenant-id $idt
 			if [ $? -eq 0 ]; then
 				 user_tenant[ cont ] = $idt
 				 (( cont += 1 ))
 			fi
-		done
+	done
 	# Chekeo que en los tenants del usuario no haya más usuarios, si es así borro
-	for id_tenant in user_tenant;
-		do
+	for id_tenant in user_tenant; do
 			cont = 0
-			for id_user in users_id;
-			do
+			for id_user in users_id;do
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
 				if [ $? -eq 0 ]; then
 				 (( cont += 1 ))
 				fi
 			done
-			if [ $cont -lt 2 ]
-				borrar_routers();
+			if [ $cont -lt 2 ]; then
+				borrar_routers
 				#Meted aqui las llamadas a las funciones
-				borrar_ipflotante();
+				borrar_ipflotante
 				
-				borrar_instancia();
-				borrar_tenant();#este debe ser el último en ejecutase
-		done
-
-
-
+				borrar_instancia
+				borrar_tenant #este debe ser el último en ejecutase
+			fi
+	done
 
 
 
 #Crear funciones al principio del documento y llamarlas donde esta indicado
 	# obtener ID de un usuario
-        id=`keystone user-list | grep $1 |awk '{print $2}'`
-        #creo un vector con los proyectos del usuario
-        tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
+    id=`keystone user-list | grep $1 |awk '{print $2}'`
+    #creo un vector con los proyectos del usuario
+    tenants=(`keystone tenant-list | grep $1 | awk '{print $2}'`)
 	#Borrar usuario
 	echo -e "\nDeleting user "$usuario"...."
-        keystone user-delete $usuario
+    keystone user-delete $usuario
 
 	#Pasos que necesitamos en este programa(Asignarselos) -- Da un error cuando intentamos borrar un grupo
 	#que esta en uso en alguna instancia. Por lo que habra que borrar antes la instancia.
