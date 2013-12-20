@@ -126,6 +126,8 @@ then
 	done
 
 	#borrar_pares_de_claves(Carlos Miguel Hernandez Romero)(Funciona)
+	#No encuentro la manera de saber a que proyecto pertenece el par de clave y de esa manera borrar las que 
+	#que pertenecen a un proyecto en concreto. Solo consigo que me de su nombre y su Fingerprint.
 	for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
 		do `nova keypair-delete $i` ;
 		echo "Eliminada el par de claves" $i
