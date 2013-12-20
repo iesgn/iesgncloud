@@ -28,7 +28,7 @@ function borrar_instancia(){
 }
 
 	#borrar_proyecto(Fracnisco Javier Gimenez)
-function borrar_tenant();{
+function borrar_tenant(){
 	`nova scrub $id_tenant;`
 	`keystone tenant-delete $id_tenant;`
 }
@@ -67,7 +67,7 @@ then
 	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
 	# Creo una lista con los tenants del usuario que deseamos borrar
 	cont = 0;
-	for idt in tenanats_id; do
+	for idt in tenants_id; do
 			keystone role-list --user-id $id --tenant-id $idt
 			if [ $? -eq 0 ]; then
 				 user_tenant[ cont ] = $idt
