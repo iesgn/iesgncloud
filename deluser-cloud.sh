@@ -4,15 +4,16 @@
 function borrar_routers(){
 echo "Borrando router del usuario"
 	for routerid in `quantum router-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+        	do
         	tenant_router=`quantum router-show $routerid | grep tenant_id | awk '{print $4}'` ;
         	if tenant_router=id_tenant     
                 then
-                        do `quantum router-delete $routerid`;
+                        quantum router-delete $routerid`;
                         echo "Eliminanando router: " $routerid
                 else
                         echo "No se borra router: " $routerid
                 fi
-        done
+			done
 }
 
 
@@ -45,9 +46,10 @@ then
 			keystone role-list --user-id $id --tenant-id $idt
 			if [ $? -eq 0 ]; then
 				 user_tenant[ cont ] = $idt
+				 (( cont += 1 ))
 			fi
 		done
-	# Chekeo que en los tenants del usuario no hya mas usuarios, si es así borro
+	# Chekeo que en los tenants del usuario no haya más usuarios, si es así borro
 	for id_tenant in user_tenant;
 		do
 			cont = 0
@@ -55,13 +57,12 @@ then
 			do
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
 				if [ $? -eq 0 ]; then
-				 cont = cont + 1
+				 (( cont += 1 ))
 				fi
 			done
-			if [ cont > 1 ]
+			if [ cont -lt 2 ]
 				borrar_routers();
 				#Meted aqui las llamadas a las funciones
-
 		done
 
 
