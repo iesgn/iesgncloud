@@ -15,6 +15,11 @@ echo "Borrando router del usuario"
         done
 }
 
+
+
+
+
+
 #Definir la variable usuario con el nombre de usuario en el argumento 1 del programa
 usuario=$1
 #Guardo la ubicación del fichero en la variable archivo por si la necesito más adelante
@@ -28,20 +33,32 @@ then
 
 	# obtener ID de un usuario
 	id=`keystone user-list | grep $1 |awk '{print $2}'`
-	#creo un vector con los proyectos del usuario
+	# Vector con todos los ID de proyectos
 	tenants_id=(`keystone tenant-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
+	# Vector con todos los ID de usuarios
 	users_id=(`keystone user-list |grep -v ^\+|grep -v id | awk '{print $2}'`)
-
-	for id_tenant in tenants_id;
+	
+	# Creo una lista con los tenants del usuario que deseamos borrar
+	cont = 0;
+	for idt in tenanats_id;
+		do
+			keystone role-list --user-id $id --tenant-id $idt
+			if [ $? -eq 0 ]; then
+				 user_tenant[ cont ] = $idt
+			fi
+		done
+	# Chekeo que en los tenants del usuario no hya mas usuarios, si es así borro
+	for id_tenant in user_tenant;
 		do
 			cont = 0
 			for id_user in users_id;
+			do
 				keystone role-list --user-id $id_user --tenant-id $id_tenant
 				if [ $? -eq 0 ]; then
 				 cont = cont + 1
-				 fi
+				fi
 			done
-			if cont>1
+			if [ cont > 1 ]
 				borrar_routers();
 				#Meted aqui las llamadas a las funciones
 
