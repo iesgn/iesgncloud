@@ -93,7 +93,7 @@ then
 
 	for i in `quantum net-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
                 do `quantum net-delete $i` ;
-                echo "Eliminando todas las subnets: " $i
+                echo "Eliminando todas las redes: " $i
         done	
 	
 	
