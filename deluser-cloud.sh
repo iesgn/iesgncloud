@@ -39,10 +39,10 @@ function borrar_ipflotante(){
         do
             for idtenantip in `quantum floatingip-show $idipflota |grep -v ^\+| grep tenant_id| awk '{print $4}'| grep -v 'Value'`;
             do
-                if idtenantip=id_tenant     
+                if [ $idtenantip=$id_tenant ];    
                 then
-                     do `quantum floatingip-delete $idipflota`;
-                     echo "Eliminado la ipflotante con id: " $idipflota
+                    `quantum floatingip-delete $idipflota`
+                    echo "Eliminado la ipflotante con id: " $idipflota
                 else
                     echo "No se ha podido eliminar la ipflotante con id: " $idipflota
                 fi
