@@ -83,13 +83,29 @@ then
 	done
 
 	#borrar_subredes(Adrián Cid)
+	
+	for i in `quantum subnet-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+                do `quantum subnet-delete $i` ;
+                echo "Eliminando todas las subnets: " $i
+        done	
+	
 	#borrar_redes(Adrián Cid)
+
+	for i in `quantum net-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+                do `quantum net-delete $i` ;
+                echo "Eliminando todas las subnets: " $i
+        done	
+	
+	
 	#borrar_routers(Miguel Angel Martin Serrano)
 	for i in `quantum router-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
                 do `quantum router-delete $i` ;
                 echo "Eliminanando router: " $i
         done
 	#borrar_volumenes 
+	
+	
+	
 	#borrar_instantaneasInstancias
 
 	#borrar_volumenes (Miguel Ángel Ávila Ruiz)
