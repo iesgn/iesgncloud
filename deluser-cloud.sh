@@ -17,6 +17,24 @@ echo "Borrando router del usuario"
 }
 
 
+	#borrar_instancias(Fracnisco Javier Gimenez)
+function borrar_instancia(){
+
+	for i in `nova list --all-tenants| grep -v ^\+|grep -v ID | awk '{print $2}'`;#recorremos todas las instancias
+	do
+		tnt_id = `nova show $i | grep tenant_id | awk '{print $4}';`# sacamos tenant de la instancia
+		if [ $tnt_id -eq $id_tenant ];# si coinciden tenants borramos
+			`nova delete $i`
+		fi
+	done
+}
+
+	#borrar_proyecto(Fracnisco Javier Gimenez)
+function borrar_tenant();{
+	`nova scrub $id_tenant;`
+	`keystone tenant-delete $id_tenant;`
+}
+
 
 
 
@@ -60,9 +78,13 @@ then
 				 (( cont += 1 ))
 				fi
 			done
-			if [ cont -lt 2 ]
+			if [ $cont -lt 2 ]
 				borrar_routers();
 				#Meted aqui las llamadas a las funciones
+				
+				
+				borrar_instancia();
+				borrar_tenant();#este debe ser el último en ejecutase
 		done
 
 
@@ -142,19 +164,7 @@ then
 		echo "Eliminada la imagen" $i
 	done
 
-	#borrar_instancias(Fracnisco Javier Gimenez)
-	for i in `nova list | grep -v ^\+|grep -v ID | awk '{print $2}'`;
-	do
-		`nova delete $i;`
-	done
 
-	#borrar_proyecto(Fracnisco Javier Gimenez)
-	#borro todos los proyectos de un usuario
-	for i in '${tenants[*]}';
-	do
-		`nova scrub $i;`
-		`keystone tenant-delete $i;`
-	done
 # Si no existe le indico a el usuario el problema
 else
 	echo -e "No existe el archivo /openrc.sh es necesario para borrar el usuario"
