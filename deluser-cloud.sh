@@ -36,6 +36,21 @@ function borrar_tenant();{
 }
 
 
+	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
+function borrar_ipflotante(){
+        for idipflota in `quantum floatingip-list |grep -v ^\+| awk '{print $2}'| grep -v 'id'`;
+        do
+            for idtenantip in `quantum floatingip-show $idipflota |grep -v ^\+| grep tenant_id| awk '{print $4}'| grep -v 'Value'`;
+            do
+                if idtenantip=id_tenant     
+                then
+                     do `quantum floatingip-delete $idipflota`;
+                     echo "Eliminado la ipflotante con id: " $idipflota
+                else
+                    echo "No se ha podido eliminar la ipflotante con id: " $idipflota
+                fi
+        done
+}
 
 
 
@@ -81,7 +96,7 @@ then
 			if [ $cont -lt 2 ]
 				borrar_routers();
 				#Meted aqui las llamadas a las funciones
-				
+				borrar_ipflotante();
 				
 				borrar_instancia();
 				borrar_tenant();#este debe ser el último en ejecutase
@@ -114,12 +129,6 @@ then
 	for i in `nova keypair-list |grep -v ^\+|grep -v Name| awk '{print $2}'`;
 		do `nova keypair-delete $i` ;
 		echo "Eliminada el par de claves" $i
-	done
-
-	#borrar_IPs_flotantes(Carlos Miguel Hernandez Romero)(Funciona)
-	for i in `nova floating-ip-list |grep -v ^\+|grep -v Ip| awk '{print $2}'`;
-		do `nova floating-ip-delete $i` ;
-		echo "Eliminada la IP flotante" $i
 	done
 
 	#borrar_subredes(Adrián Cid)
