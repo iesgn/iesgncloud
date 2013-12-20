@@ -102,9 +102,7 @@ then
                 do `quantum router-delete $i` ;
                 echo "Eliminanando router: " $i
         done
-	#borrar_volumenes 
-	
-	
+
 	
 	#borrar_instantaneasInstancias
 
