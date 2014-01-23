@@ -18,7 +18,6 @@ else:
 config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
 
-# Getting auth token from keystone
 try:
     creds = get_keystone_creds()
     keystone = keystonec.Client(**creds)
