@@ -63,7 +63,7 @@ if len(ldap_users) == 0:
 # Getting auth token from keystone
 try:
     creds = get_keystone_creds()
-    keystone = ksclient.Client(**creds)
+    keystone = keystonec.Client(**creds)
 except keystonec.exceptions.Unauthorized:
     print "Invalid keystone username or password"
     sys.exit()
@@ -78,12 +78,14 @@ for role in keystone.roles.list():
 for member in ldap_users:
     username = member[1]["%s" % attrib_list[0]][0]
     # If user exists in keystone, user password is updated
-    for oldmember in keystone.users.list():
-        if oldmember.name == username:
-            new_passwd = member[1]["%s" % lista_atrib[2]][0]
-            keystone.users.update_password(oldmember.id,new_passwd)
-            print "Password of %s updated" % oldmember.name
-            sys.exit(0)
+    try:
+        oldmember = keystone.users.find(name=username)
+        new_passwd = member[1]["%s" % attrib_list[2]][0]
+        keystone.users.update_password(oldmember.id,new_passwd)
+        print "Password for %s updated" % oldmember.name
+        continue
+    except keystonec.exceptions.NotFound:
+        print "Creating new user %s" % username
 
     # If user does not exist:
     # - user is created
@@ -131,5 +133,4 @@ for member in ldap_users:
     quantum.add_interface_router(newrouter['router']['id'],
                                  {'subnet_id': newsubnet['subnet']['id']})
     print "Connecting router to subnet %s" % newsubnet['subnet']['id']
-    sys.exit(0)
     
