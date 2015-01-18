@@ -1,32 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
 import sys
-from getpass import getpass
 import ConfigParser
 from novaclient.v1_1 import client as novac
 from cinderclient import client as cinderc
-from quantumclient.v2_0 import client as quantumc
+from neutronclient.neutron import client as neutronc
 from keystoneclient.v2_0 import client as keystonec
-
-nova = novac.Client(username = user,
-                    api_key = password,
-                    project_id = tenant,
-                    auth_url = keystoneurl)
-                    
-quantum = quantumc.Client(username = user,
-                    api_key = password,
-                    project_id = tenant,
-                    auth_url = keystoneurl)
-
-cinder = cinderc.Client(username = user,
-                    api_key = password,
-                    project_id = tenant,
-                    auth_url = keystoneurl)
+from credentials import get_keystone_creds
+from credentials import get_nova_creds
 
 if len(sys.argv) == 2:
-    user = sys.argv[1]
-    print "Deleting user %s to OpenStack" % user
+    username = sys.argv[1]
+    print "Deleting user %s to OpenStack" % username
 else:
     print """
     If you want to delete or modify ONLY ONE USER, please use:
@@ -34,34 +19,32 @@ else:
     """
     if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
         sys.exit()
-    user = "*"
+    username = "*"
     print "deleting ALL users and tenants except admin user and service tenant"
+
+config = ConfigParser.ConfigParser()
+config.read("adduser-cloud.conf")
 
 # Getting auth token from keystone
 try:
-    creds = get_keystone_creds()
-    keystone = ksclient.Client(**creds)
+    keystone_creds = get_keystone_creds()
+    keystone = keystonec.Client(**keystone_creds)
+    nova_creds = get_nova_creds()
+    nova = novac.Client(**nova_creds)
 except keystonec.exceptions.Unauthorized:
     print "Invalid keystone username or password"
     sys.exit()
 
-# Getting user list to delete
-if user == "*":
+# Getting the list of users to delete:
+if username == "*":
     users_list = keystone.users.list()
 else:
-    users_list = [ keystone.users.find(name=user) ]
+    users_list = [ keystone.users.find(name=username) ]
 
 # Getting tenants of each user:
-for tenant in keystone.tenants.list():
-    for tenant_user in tenant.list_users():
-        
+for user in user_list:
+    tenant_id = user.tenantId
 
-
-
-############################################################################
-# a continuación  estan los metodos para borrar algunos de los elementos   #
-# hay que probarlos y incluirlos a cada uno en un procedimiento            #
-############################################################################
 
 
 #Borrar todas las imagenes
@@ -92,13 +75,12 @@ def borrar_grupos():
 #borra todas las instacias
 
 def borrar_instancias():
-	server=nova.servers.list()
-
-	if len(server)==0:
-		print "No tiene ninguna instancia"
-	else:
-		for i in server: 
-			nova.servers.delete(i)
+    server=nova.servers.list()
+    if len(server)==0:
+        print "No tiene ninguna instancia"
+    else:
+        for i in server: 
+            nova.servers.delete(i)
 
 #Eliminar todas las instantaneas de volumenes del usuario
 def borrar_instantaneasvolumen():

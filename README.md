@@ -1,11 +1,17 @@
 # iesgncloud
 
-Scripts and small applications used in IES GN OpenStack administradtion
+Scripts and small python applications used in IES GN OpenStack administration
 
 ## adduser-cloud
 
-Used to create keystone users, extracting data from a LDAP tree. Each potential
-keystone user must have a SHA512 hashed password created with crypt (e.g.
-$6$lI4Cfr6S$nx/kWLPxMJzaAfoxTZYlFPv.kC49JobWHtvVCV5zrNHSffBEzqeQfP5.eZdVJwI1.XUeA3LeQ7Y8ZrW34900y1).
+Used to create keystone users and tenants, extracting data from a LDAP tree and putting then into a MySQL database. When a user
+is created a minimal network infrastructure is created: One network, one subnetwork and one router. 
 
-Particular parameters must be defined in adduser-cloud.conf
+We don't like the way LDAP is implemented into OpenStack, IOHO it's a very "intrusive" method. We loved
+a LDAP backend that can be used only for authentication purposes, allowing the utilization of all usernames and
+password of our organization, but that until now has not been possible. 
+
+## deluser-cloud
+
+Used to remove a user from a tenant. If the user is the only user in the tenant, the program removes all elements related to this
+tenant (volumes, instances and network elements) and finally removes the tenant.
