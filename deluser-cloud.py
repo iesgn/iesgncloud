@@ -11,10 +11,10 @@ from credentials import get_nova_creds
 
 if len(sys.argv) == 2:
     username = sys.argv[1]
-    print "Deleting user %s to OpenStack" % username
+    print "Deleting user %s and all related infrastructure from OpenStack" % username
 else:
     print """
-    If you want to delete or modify ONLY ONE USER, please use:
+    If you want to delete ONLY ONE USER, please use:
     $ deluser-cloud <username>
     """
     if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
@@ -41,10 +41,16 @@ if username == "*":
 else:
     users_list = [ keystone.users.find(name=username) ]
 
-# Getting tenants of each user:
-for user in user_list:
+# Getting main tenant of each user:
+for user in users_list:
     tenant_id = user.tenantId
 
+    # Deleting nova servers of this tenant
+
+    for server in nova.servers.list(search_opts={'all_tenants':1}):
+        if server.tenant_id == tenant_id:
+            server.delete()
+            
 
 
 #Borrar todas las imagenes
