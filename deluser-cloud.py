@@ -72,13 +72,13 @@ for router in neutron.list_routers()['routers']:
 
 for subnet in neutron.list_subnets()['subnets']:
     if subnet['tenant_id'] == tenant_id:
-        neutron_delete_subnet(subnet['id'])
+        neutron.delete_subnet(subnet['id'])
 
 # Deleting networks
 
-for net in neutron.list_nets()['nets']:
-    if net['tenant_id'] == tenant_id:
-        neutron_delete_net(net['id'])
+for network in neutron.list_networks()['networks']:
+    if network['tenant_id'] == tenant_id:
+        neutron.delete_network(network['id'])
 
 # Deleting volume snapshots
 
