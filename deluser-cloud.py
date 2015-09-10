@@ -44,18 +44,21 @@ glance = glancec.Client(glance_endpoint, token=keystone.auth_token)
 for server in nova.servers.list(search_opts={'all_tenants':1}):
     if server.tenant_id == tenant_id:
         server.delete()
+        print "Deleted server %s" % server.id
             
 # Deleting security groups
 
 for sec_group in neutron.list_security_groups()['security_groups']:
     if sec_group['tenant_id'] == tenant_id:
         neutron.delete_security_group(sec_group['id'])
+        print "Deleted security group %s" % sec_group['id']
 
 # Deleting floating IPs
 
 for ip in neutron.list_floatingips()['floatingips']:
     if ip['tenant_id'] == tenant_id:
         neutron.delete_floatingip(ip['id'])
+        print "Deleted floating IP %s" % ip['id']
 
 # Deleting routers
 
@@ -67,36 +70,43 @@ for router in neutron.list_routers()['routers']:
             neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
     if router['tenant_id'] == tenant_id:
         neutron.delete_router(router['id'])
+        print "Deleted router %s" % router['id']
+
 
 # Deleting subnetworks
 
 for subnet in neutron.list_subnets()['subnets']:
     if subnet['tenant_id'] == tenant_id:
         neutron.delete_subnet(subnet['id'])
+        print "Deleted subnetwork %s" % subnet['id']
 
 # Deleting networks
 
 for network in neutron.list_networks()['networks']:
     if network['tenant_id'] == tenant_id:
         neutron.delete_network(network['id'])
+        print "Deleted network %s" % network['id']
 
 # Deleting volume snapshots
 
 for vol_snap in cinder.volume_snapshots.list(search_opts={'all_tenants':1}):
     if vol_snap.project_id == tenant_id:
         cinder.volume_snapshots.delete(vol_snap)
+        print "Deleted volume snapshot %s" % vol_snap.id
 
 # Deleting volumes
 
 for vol in cinder.volumes.list(search_opts={'all_tenants':1}):
     if vol._info['os-vol-tenant-attr:tenant_id'] == tenant_id:
         cinder.volumes.delete(vol)
+        print "Deleted volume %s" % vol.id
 
 # Deleting images
 
 for image in glance.images.list(search_opts={'all_tenants':1}):
     if image['owner'] == tenant_id:
         glance.images.delete(image['id'])
+        print "Deleted image %s" % image.id
 
 # Borrar usuarios del proyecto
 # Borrar proyecto
