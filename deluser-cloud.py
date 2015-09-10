@@ -11,17 +11,14 @@ from credentials import get_keystone_creds
 from credentials import get_nova_creds
 
 if len(sys.argv) == 2:
-    username = sys.argv[1]
-    print "Deleting user %s and all related infrastructure from OpenStack" % username
+    tenant_id = sys.argv[1]
+    print "Deleting tenant %s and all related infrastructure from OpenStack" % tenant_id
 else:
     print """
-    If you want to delete ONLY ONE USER, please use:
-    $ deluser-cloud <username>
+    Please use:
+    $ deluser-cloud <tenant_id>
     """
-    if raw_input("Are you sure you want to continue (y/n)? ") != 'y':
-        sys.exit()
-    username = "*"
-    print "deleting ALL users and tenants except admin user and service tenant"
+    sys.exit()
 
 config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
@@ -42,95 +39,64 @@ glance_endpoint = keystone.service_catalog.url_for(service_type='image',
                                                    endpoint_type='publicURL')
 glance = glancec.Client(glance_endpoint, token=keystone.auth_token)
 
-# Getting the list of users to delete:
-if username == "*":
-    users_list = keystone.users.list()
-else:
-    users_list = [ keystone.users.find(name=username) ]
+# Deleting nova servers
 
-# Getting main tenant of each user:
-for user in users_list:
-    tenant_id = user.tenantId
-
-    # Deleting nova servers
-
-    for server in nova.servers.list(search_opts={'all_tenants':1}):
-        if server.tenant_id == tenant_id:
-            server.delete()
+for server in nova.servers.list(search_opts={'all_tenants':1}):
+    if server.tenant_id == tenant_id:
+        server.delete()
             
-    # Deleting security groups
-    
-    for security_group in neutron.list_security_groups()['security_groups']:
-        if security_group['tenant_id'] == tenant_id:
-            neutron.delete_security_group(sec_group['id'])
+# Deleting security groups
 
-    # Deleting floating IPs
+for sec_group in neutron.list_security_groups()['security_groups']:
+    if sec_group['tenant_id'] == tenant_id:
+        neutron.delete_security_group(sec_group['id'])
 
-    for ip in neutron.list_floatingips()['floatingips']:
-        if ip['tenant_id'] == tenant_id:
-            neutron.delete_floatingip(ip['id'])
+# Deleting floating IPs
 
-    # Deleting routers
+for ip in neutron.list_floatingips()['floatingips']:
+    if ip['tenant_id'] == tenant_id:
+        neutron.delete_floatingip(ip['id'])
 
-    for router in neutron.list_routers()['routers']:
-        if router['tenant_id'] == tenant_id:
-            neutron.remove_gateway_router(router['id'])
-        for port in neutron.list_ports(tenant_id=tenant_id)["ports"]:
-            if port["device_id"] == router["id"]:
-                neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
-        neutron.delete_router(router['id'])
+# Deleting routers
 
-    # Deleting subnetworks
+for router in neutron.list_routers()['routers']:
+    if router['tenant_id'] == tenant_id:
+        neutron.remove_gateway_router(router['id'])
+    for port in neutron.list_ports(tenant_id=tenant_id)["ports"]:
+        if port["device_id"] == router["id"]:
+            neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
+    neutron.delete_router(router['id'])
 
-    for subnet in neutron.list_subnets()['subnets']:
-        if subnet['tenant_id'] == tenant_id:
-            neutron_delete_subnet(subnet['id'])
+# Deleting subnetworks
 
-    # Deleting networks
+for subnet in neutron.list_subnets()['subnets']:
+    if subnet['tenant_id'] == tenant_id:
+        neutron_delete_subnet(subnet['id'])
 
-    for net in neutron.list_nets()['nets']:
-        if net['tenant_id'] == tenant_id:
-            neutron_delete_net(net['id'])
+# Deleting networks
 
-    # Deleting volume snapshots
+for net in neutron.list_nets()['nets']:
+    if net['tenant_id'] == tenant_id:
+        neutron_delete_net(net['id'])
 
-    for vol_snap in cinder.volume_snapshots.list(search_opts={'all_tenants':1}):
-        if vol_snap.project_id == tenant_id:
-            cinder.volume_snapshots.delete(vol_snap)
+# Deleting volume snapshots
 
-    # Deleting volumes
+for vol_snap in cinder.volume_snapshots.list(search_opts={'all_tenants':1}):
+    if vol_snap.project_id == tenant_id:
+        cinder.volume_snapshots.delete(vol_snap)
 
-    for vol in cinder.volumes.list(search_opts={'all_tenants':1}):
-        if vol._info['os-vol-tenant-attr:tenant_id'] == tenant_id:
-            cinder.volumes.delete(vol)
+# Deleting volumes
 
-    # Deleting images
+for vol in cinder.volumes.list(search_opts={'all_tenants':1}):
+    if vol._info['os-vol-tenant-attr:tenant_id'] == tenant_id:
+        cinder.volumes.delete(vol)
 
-    for image in glance.images.list(search_opts={'all_tenants':1}):
-        if image['owner'] == tenant_id:
-            glance.images.delete(image['id'])
+# Deleting images
 
-		
+for image in glance.images.list(search_opts={'all_tenants':1}):
+    if image['owner'] == tenant_id:
+        glance.images.delete(image['id'])
 
-#Borrar proyecto
-
-def borrar_proyecto():
-        nombreproyectoaborrar=nova.project_id
-
-if nombreproyectoaborrar:
-        keystone.tenants.delete(nombreproyectoaborrar)
-else:
-        print "No hay ningun proyecto definido"
-       
-#Borrar usuario 
-
-def borrar_usuario():
-	for usuario in keystone.users.list():
-		if usuario.name == user:
-			 exists = True
-		else
-			break
-	if exists == True:	
-		print "Borrando usuario"
-		keystone.users.delete(user)
+# Borrar usuarios del proyecto
+# Borrar proyecto
 
