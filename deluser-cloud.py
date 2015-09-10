@@ -39,6 +39,12 @@ glance_endpoint = keystone.service_catalog.url_for(service_type='image',
                                                    endpoint_type='publicURL')
 glance = glancec.Client(glance_endpoint, token=keystone.auth_token)
 
+# Getting member id
+
+for role in keystone.roles.list():
+    if role.name == '_member_':
+        member_id = role.id
+
 # Deleting nova servers
 
 for server in nova.servers.list(search_opts={'all_tenants':1}):
@@ -72,7 +78,10 @@ for router in neutron.list_routers()['routers']:
         neutron.delete_router(router['id'])
         print "Deleted router %s" % router['id']
 
+# Deleting VIPs
 
+# Deleting Load balancers
+        
 # Deleting subnetworks
 
 for subnet in neutron.list_subnets()['subnets']:
@@ -108,6 +117,20 @@ for image in glance.images.list(search_opts={'all_tenants':1}):
         glance.images.delete(image['id'])
         print "Deleted image %s" % image.id
 
-# Borrar usuarios del proyecto
-# Borrar proyecto
+# Deleting users
+
+users = keystone.tenants.list_users(tenant_id)
+
+for user in users:
+    keystone.tenants.remove_user(tenant_id,
+                                 user.id,
+                                 member_id)
+
+    print "Deleting user %s" % user.name
+
+# Deleting tenant
+    
+keystone.tenants.delete(tenant_id)
+
+sys.exit(0)
 
