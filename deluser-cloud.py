@@ -65,7 +65,8 @@ for router in neutron.list_routers()['routers']:
     for port in neutron.list_ports(tenant_id=tenant_id)["ports"]:
         if port["device_id"] == router["id"]:
             neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
-    neutron.delete_router(router['id'])
+    if router['tenant_id'] == tenant_id:
+        neutron.delete_router(router['id'])
 
 # Deleting subnetworks
 
