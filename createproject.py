@@ -7,6 +7,7 @@ in keystone
 """
 import sys
 import ConfigParser
+import requests
 from keystoneclient.v3 import client as keystonec
 from neutronclient.neutron import client as neutronc
 from credentials import get_keystone_creds
@@ -39,7 +40,7 @@ except keystonec.exceptions.Unauthorized:
 # Getting domain
 try:
     domain = keystone.domains.find(
-        name=config.get("default","domain"))
+        name=config.get("keystone","domain"))
 except keystonec.exceptions.NotFound:
     print "Domain not found"
     sys.exit()
@@ -65,17 +66,26 @@ for member in user_list:
     # - router interface is created in subnet 10.0.0.0/24
 
     # Creating new project
-    project = keystone.projects.create(name = "Proyecto de %s" %
-                                       member.name,
-                                       description = "Proyecto de
-                                       %s" % member.name)
+    defaultDomain = keystone.domains.find(name="default")
+    project = keystone.projects.create(name = "Proyecto de %s" % member.name,
+                                       domain = defaultDomain,
+                                       description = "Proyecto de %s" % member.name)
     print "Creating new project with id %s" % project.id
-    # Assigning user role to member in the project
+    # Assigning user role to member in the project with requests
+    headers = {"X-Auth-Token":keystone.auth_token,
+               "Content-Type": "application/json"}
     user_role = keystone.roles.find(name="user")
-    keystone.role_assignments.create({"project":project.id,
-                                      "user":member.id
-                                      "role":user_role.id})
-    print "Assigning user role"
+    url = "http://%s/projects/%s/users/%s/roles/%s" % (config.get("keystone","url"),
+                                                       project.id,
+                                                       member.id,
+                                                       user_role.id)
+    try:
+        requests.put(url,headers=headers)
+        print "Assigning user role"
+    except requests.exceptions.RequestException as e:
+        print e
+        sys.exit(1)
+        
     # # Creating network"
     # neutron = neutronc.Client('2.0',
     #                           endpoint_url=config.get("neutron","endpoint"),
