@@ -103,7 +103,7 @@ for member in user_list:
               'dns_nameservers': ['%s' % config.get("neutron","dns_nameservers")]}
     newsubnet = neutron.create_subnet({'subnet':subnet})
     print "Creating new subnet with id %s" % newsubnet['subnet']['id']
-    router = {'name':'router de %s' % username,
+    router = {'name':'router de %s' % member.name,
               'project_id': project.id,
               'external_gateway_info':{'network_id':
                                        config.get("neutron","external_net_id")},
