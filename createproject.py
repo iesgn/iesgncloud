@@ -99,7 +99,7 @@ for member in user_list:
               'ip_version':4,
               'cidr':'10.0.0.0/24',
               'enable_dhcp': True,
-#              'tenant_id': project.id,
+              'project_id': project.id,
               'dns_nameservers': ['%s' % config.get("neutron","dns_nameservers")]}
     newsubnet = neutron.create_subnet({'subnet':subnet})
     print "Creating new subnet with id %s" % newsubnet['subnet']['id']
