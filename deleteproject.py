@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 """
 Python script used to delete a project from a domain, including the deletion
-of the project's objects: instances, volumes, floating IPs, etc.
+of the following objects: 
+ * instances
+ * volume snapshots
+ * volumes
 """
 import sys
 import ConfigParser
@@ -45,22 +48,18 @@ except keystonec.exceptions.NotFound:
 
 catalog = keystone.endpoints.list()
 
+neutron_endpoint = next(( endpoint for endpoint in catalog
+                          if endpoint.service_id == "network"
+                          and endpoint.interface == "public"), None)
+glance_endpoint = next(( endpoint for endpoint in catalog
+                          if endpoint.service_id == "image"
+                          and endpoint.interface == "public"), None)
+
 nova_endpoint = next(( endpoint for endpoint in catalog
                        if endpoint.service_id == "compute"
                        and endpoint.interface == "public"), None)
 nova_endpoint.url = nova_endpoint.url.replace("$(tenant_id)s",
                                               keystone.project_id)
-neutron_endpoint = next(( endpoint for endpoint in catalog
-                          if endpoint.service_id == "network"
-                          and endpoint.interface == "public"), None)
-cinder_endpoint = next(( endpoint for endpoint in catalog
-                         if endpoint.service_id == "volumev2"
-                         and endpoint.interface == "public"), None)
-cinder_endpoint.url = cinder_endpoint.url.replace("$(tenant_id)s",
-                                                  keystone.project_id)
-glance_endpoint = next(( endpoint for endpoint in catalog
-                          if endpoint.service_id == "image"
-                          and endpoint.interface == "public"), None)
 
 headers = {"X-Auth-Token":keystone.auth_token,
            "Content-Type": "application/json"}
@@ -71,7 +70,9 @@ try:
     servers = requests.get("%s/servers/detail" % nova_endpoint.url,
                            headers=headers,
                            params={"all_tenants":True})
-    servers_json = json.loads(servers.text)
+    if servers.status_code == 200:
+        servers_json = json.loads(servers.text)
+
 except requests.exceptions.RequestException as e:
     print e
     sys.exit(1)
@@ -81,13 +82,68 @@ except requests.exceptions.RequestException as e:
 for server in servers_json["servers"]:
     if server["tenant_id"] == project_id:
         try:
-            requests.delete("%s/servers/%s" % (nova_endpoint.url,
-                                               server["id"]),
-                            headers=headers)
-            print "Server '%s' deleted" % server["name"]
+            r = requests.delete("%s/servers/%s" % (nova_endpoint.url,
+                                                   server["id"]),
+                                headers=headers)
+            if r.status_code == 202:
+                print "Request to delete server %s has been accepted." % server["id"]
         except requests.exceptions.RequestException as e:
             print e
             sys.exit(1)
-                            
 
+# Get Cinder public endpoint
+
+cinder_endpoint = next(( endpoint for endpoint in catalog
+                         if endpoint.service_id == "volumev2"
+                         and endpoint.interface == "public"), None)
+cinder_endpoint.url = cinder_endpoint.url.replace("$(tenant_id)s",
+                                                  keystone.project_id)
+
+# Get all snapshots and store then in a JSON object
+
+try:
+    snapshots = requests.get("%s/snapshots/detail" % cinder_endpoint.url,
+                             headers=headers,
+                             params={"all_tenants":True})
+    if snapshots.status_code == 200:
+        snapshots_json = json.loads(snapshots.text)
+        
+except requests.exceptions.RequestException as e:
+    print e
+    sys.exit(1)
+    
+for snapshot in snapshots_json["snapshots"]:
+    if snapshot["tenant_id"] == project_id:
+        try:
+            r = requests.delete("%s/snapshots/%s" % (cinder_endpoint.url,
+                                                 snapshot["id"]),
+                            headers=headers)
+            if r.status_code == 202:
+                print "Request to delete snapshot %s has been accepted." % snapshot["id"]
+        except requests.exceptions.RequestException as e:
+            print e
+            sys.exit(1)
+
+try:
+    volumes = requests.get("%s/volumes/detail" % cinder_endpoint.url,
+                           headers=headers,
+                           params={"all_tenants":True})
+    if volumes.status_code == 200:
+        volumes_json = json.loads(volumes.text)
+        
+except requests.exceptions.RequestException as e:
+    print e
+    sys.exit(1)
+    
+for volume in volumes_json["volumes"]:
+    if volume["os-vol-tenant-attr:tenant_id"] == project_id and volume["status"] != "in-use":
+        try:
+            r = requests.delete("%s/volumes/%s" % (cinder_endpoint.url,
+                                                   volume["id"]),
+                                headers=headers)
+            if r.status_code == 202:
+                print "Request to delete volume %s has been accepted." % volume["id"]
+        except requests.exceptions.RequestException as e:
+            print e
+            sys.exit(1)
 
