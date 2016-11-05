@@ -139,7 +139,7 @@ except requests.exceptions.RequestException as e:
     sys.exit(1)
     
 for volume in volumes_json["volumes"]:
-    if volume["os-vol-tenant-attr:tenant_id"] == project_id and volume["status"] != "in-use":
+    if volume["os-vol-tenant-attr:tenant_id"] == project_id:
         try:
             r = requests.delete("%s/volumes/%s" % (cinder_endpoint.url,
                                                    volume["id"]),
