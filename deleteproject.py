@@ -32,6 +32,7 @@ config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
 
 # Getting auth token from keystonetry:
+try:
     creds = get_keystone_v3_creds()
     keystone = keystonec.Client(**creds)
 except keystonec.exceptions.Unauthorized:
