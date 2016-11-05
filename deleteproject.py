@@ -19,7 +19,7 @@ from credentials import get_keystone_v3_creds
 import json
 
 if len(sys.argv) == 2:
-    project = sys.argv[1]
+    project_id = sys.argv[1]
     print "Deleting project %s and all its related objects" % project_id
 else:
     print """
