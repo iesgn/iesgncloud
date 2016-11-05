@@ -56,6 +56,8 @@ glance_endpoint = next(( endpoint for endpoint in catalog
                           if endpoint.service_id == "image"
                           and endpoint.interface == "public"), None)
 
+
+
 nova_endpoint = next(( endpoint for endpoint in catalog
                        if endpoint.service_id == "compute"
                        and endpoint.interface == "public"), None)
@@ -114,7 +116,7 @@ except requests.exceptions.RequestException as e:
     sys.exit(1)
     
 for snapshot in snapshots_json["snapshots"]:
-    if snapshot["tenant_id"] == project_id:
+    if snapshot["os-extended-snapshot-attributes:project_id"] == project_id:
         try:
             r = requests.delete("%s/snapshots/%s" % (cinder_endpoint.url,
                                                  snapshot["id"]),
