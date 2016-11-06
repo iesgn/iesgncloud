@@ -15,9 +15,9 @@ import requests
 from keystoneclient.v3 import client as keystonec
 from keystoneclient.auth.identity import v3
 from keystoneclient import session
-from novaclient.v2 import client as novac
+#from novaclient.v2 import client as novac
 # from cinderclient.v2 import client as cinderc
-# from neutronclient.v2_0 import client as neutronc
+from neutronclient.v2_0 import client as neutronc
 # from glanceclient.v2 import client as glancec
 from credentials import get_keystone_v3_creds
 import json
