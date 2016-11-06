@@ -180,14 +180,14 @@ for router in neutron.list_routers()['routers']:
 # Deleting subnetworks
 
 for subnet in neutron.list_subnets()['subnets']:
-    if subnet['tenant_id'] == tenant_id:
+    if subnet['tenant_id'] == project_id:
         neutron.delete_subnet(subnet['id'])
         print "Deleted subnetwork %s" % subnet['id']
 
 # Deleting networks
 
 for network in neutron.list_networks()['networks']:
-    if network['tenant_id'] == tenant_id:
+    if network['tenant_id'] == project_id:
         neutron.delete_network(network['id'])
         print "Deleted network %s" % network['id']
                         
