@@ -35,7 +35,7 @@ else:
 config = ConfigParser.ConfigParser()
 config.read("adduser-cloud.conf")
 
-# Getting auth token from keystonetry:
+# Getting auth token from keystone
 try:
     creds = get_keystone_v3_creds()
     keystone = keystonec.Client(**creds)
@@ -43,13 +43,20 @@ except keystonec.exceptions.Unauthorized:
     print "Invalid keystone username or password"
     sys.exit()
 
-# Getting domain
+# Verifying admin role for user
 try:
-    domain = keystone.domains.find(
-        name=config.get("keystone","domain"))
-except keystonec.exceptions.NotFound:
-    print "Domain not found"
+    keystone.users.list()
+except keystonec.exceptions.Forbidden:
+    print "You are not authorized to execute this pregram, admin role needed"
     sys.exit()
+    
+# Getting domain
+# try:
+#     domain = keystone.domains.find(
+#         name=config.get("keystone","domain"))
+# except keystonec.exceptions.NotFound:
+#     print "Domain not found"
+#     sys.exit()
 
 catalog = keystone.endpoints.list()
 
