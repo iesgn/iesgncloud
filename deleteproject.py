@@ -21,6 +21,7 @@ from neutronclient.v2_0 import client as neutronc
 # from glanceclient.v2 import client as glancec
 from credentials import get_keystone_v3_creds
 import json
+import time
 
 if len(sys.argv) == 2:
     project_id = sys.argv[1]
@@ -76,7 +77,10 @@ nova_endpoint.url = nova_endpoint.url.replace("$(tenant_id)s",
 try:
     servers = requests.get("%s/servers/detail" % nova_endpoint.url,
                            headers=headers,
-                           params={"all_tenants":True})
+                           params={
+                               "all_tenants":True,
+                               "project_id":project_id
+                               })
     if servers.status_code == 200:
         servers_json = json.loads(servers.text)
 
@@ -85,16 +89,15 @@ except requests.exceptions.RequestException as e:
     sys.exit(1)
 
 for server in servers_json["servers"]:
-    if server["tenant_id"] == project_id:
-        try:
-            r = requests.delete("%s/servers/%s" % (nova_endpoint.url,
-                                                   server["id"]),
-                                headers=headers)
-            if r.status_code == 202:
-                print "Request to delete server %s has been accepted." % server["id"]
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
+    try:
+        r = requests.delete("%s/servers/%s" % (nova_endpoint.url,
+                                               server["id"]),
+                            headers=headers)
+        if r.status_code == 202:
+            print "Request to delete server %s has been accepted." % server["id"]
+    except requests.exceptions.RequestException as e:
+        print e
+        sys.exit(1)
 
 # Cinder: Deleting snapshots and volumes
 
@@ -107,30 +110,51 @@ cinder_endpoint.url = cinder_endpoint.url.replace("$(tenant_id)s",
 try:
     snapshots = requests.get("%s/snapshots/detail" % cinder_endpoint.url,
                              headers=headers,
-                             params={"all_tenants":True})
+                             params={
+                                 "all_tenants":True,
+                                 "project_id":project_id
+                             })
     if snapshots.status_code == 200:
         snapshots_json = json.loads(snapshots.text)
         
 except requests.exceptions.RequestException as e:
     print e
     sys.exit(1)
-    
+
 for snapshot in snapshots_json["snapshots"]:
-    if snapshot["os-extended-snapshot-attributes:project_id"] == project_id:
-        try:
-            r = requests.delete("%s/snapshots/%s" % (cinder_endpoint.url,
+    try:
+        r = requests.delete("%s/snapshots/%s" % (cinder_endpoint.url,
                                                  snapshot["id"]),
                             headers=headers)
-            if r.status_code == 202:
-                print "Request to delete snapshot %s has been accepted." % snapshot["id"]
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
+        if r.status_code == 202:
+            print "Request to delete snapshot %s has been accepted." % snapshot["id"]
+    except requests.exceptions.RequestException as e:
+        print e
+        sys.exit(1)
+
+# Waiting until there were no snapshots available, because a volume can't be deleted
+# while any associated snapshot exists
+
+while True:
+    snapshots = requests.get("%s/snapshots/detail" % cinder_endpoint.url,
+                             headers=headers,
+                             params={
+                                 "all_tenants":True,
+                                 "project_id":project_id
+                             })
+    if len(json.loads(snapshots.text)["snapshots"]) == 0:
+        break
+    else:
+        print "Waiting until associated snapshots are deleted ..."
+        time.sleep(5)
 
 try:
     volumes = requests.get("%s/volumes/detail" % cinder_endpoint.url,
                            headers=headers,
-                           params={"all_tenants":True})
+                           params={
+                               "all_tenants":True,
+                               "project_id":project_id
+                           })
     if volumes.status_code == 200:
         volumes_json = json.loads(volumes.text)
         
@@ -139,16 +163,14 @@ except requests.exceptions.RequestException as e:
     sys.exit(1)
     
 for volume in volumes_json["volumes"]:
-    if volume["os-vol-tenant-attr:tenant_id"] == project_id:
-        try:
-            r = requests.delete("%s/volumes/%s" % (cinder_endpoint.url,
-                                                   volume["id"]),
-                                headers=headers)
-            if r.status_code == 202:
-                print "Request to delete volume %s has been accepted." % volume["id"]
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)
+    try:
+        r = requests.delete("%s/volumes/%s" % (cinder_endpoint.url,
+                                               volume["id"]),headers=headers)
+        if r.status_code == 202:
+            print "Request to delete volume %s has been accepted." % volume["id"]
+    except requests.exceptions.RequestException as e:
+        print e
+        sys.exit(1)
 
 # Neutron: Deleting routers, subnets, networks, security groups and releasing floating IPs
 
