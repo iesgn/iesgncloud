@@ -183,96 +183,48 @@ neutron = neutronc.Client(session=sess)
 # Deleting security groups
 
 for sec_group in neutron.list_security_groups()['security_groups']:
-    if sec_group['tenant_id'] == project_id:
+    if sec_group['project_id'] == project_id:
         neutron.delete_security_group(sec_group['id'])
-        print "Deleted security group %s" % sec_group['id']
+        print "Security group %s deleted" % sec_group['id']
 
 # Deleting floating IPs
 
 for ip in neutron.list_floatingips()['floatingips']:
-    if ip['tenant_id'] == project_id:
+    if ip['project_id'] == project_id:
         neutron.delete_floatingip(ip['id'])
-        print "Deleted floating IP %s" % ip['id']
+        print "Floating IP %s released" % ip['floating_ip_address']
 
 # Deleting routers
 
 for router in neutron.list_routers()['routers']:
-    if router['tenant_id'] == project_id:
+    if router['project_id'] == project_id:
         neutron.remove_gateway_router(router['id'])
-        for port in neutron.list_ports(tenant_id=project_id)["ports"]:
+        for port in neutron.list_ports(project_id=project_id)["ports"]:
             if port["device_id"] == router["id"]:
                 neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
-        if router['tenant_id'] == project_id:
+        if router['project_id'] == project_id:
             neutron.delete_router(router['id'])
-            print "Deleted router %s" % router['id']
+            print "%s deleted" % router['name']
 
 # Deleting subnetworks
 
 for subnet in neutron.list_subnets()['subnets']:
-    if subnet['tenant_id'] == project_id:
+    if subnet['project_id'] == project_id:
         neutron.delete_subnet(subnet['id'])
         print "Deleted subnetwork %s" % subnet['id']
 
 # Deleting networks
 
 for network in neutron.list_networks()['networks']:
-    if network['tenant_id'] == project_id:
+    if network['project_id'] == project_id:
         neutron.delete_network(network['id'])
         print "Deleted network %s" % network['id']
                         
-# neutron_endpoint = next(( endpoint for endpoint in catalog
-#                           if endpoint.service_id == "network"
-#                           and endpoint.interface == "public"), None)
-
-# try:
-#     floating_ips = requests.get("%s/v2.0/floatingips" % neutron_endpoint.url,
-#                                 headers=headers)
-#     if floating_ips.status_code == 200:
-#         floating_ips_json = json.loads(floating_ips.text)
-        
-# except requests.exceptions.RequestException as e:
-#     print e
-#     sys.exit(1)
-    
-# for floating_ip in floating_ips_json["floatingips"]:
-#     if floating_ip["tenant_id"] == project_id:
-#         try:
-#             r = requests.delete("%s/v2.0/floatingips/%s" % (neutron_endpoint.url,
-#                                                             floating_ip["id"]),
-#                                 headers=headers)
-#             if r.status_code == 204:
-#                 print "Floating IP %s has been released." % floating_ip["floating_ip_address"]
-#         except requests.exceptions.RequestException as e:
-#             print e
-#             sys.exit(1)
-
-# try:
-#     security_groups = requests.get("%s/v2.0/security-groups" % neutron_endpoint.url,
-#                                    headers=headers)
-#     if security_groups.status_code == 200:
-#         security_groups_json = json.loads(security_groups.text)
-        
-# except requests.exceptions.RequestException as e:
-#     print e
-#     sys.exit(1)
-    
-# for security_group in security_groups_json["security_groups"]:
-#     if security_group["tenant_id"] == project_id:
-#         try:
-#             r = requests.delete("%s/v2.0/security-groups/%s" % (neutron_endpoint.url,
-#                                                                 security_group["id"]),
-#                                 headers=headers)
-#             if r.status_code == 204:
-#                 print "Security group %s has been deleted." % security_group["name"]
-#         except requests.exceptions.RequestException as e:
-#             print e
-#             sys.exit(1)
-
 # Glance: Deleting images
 
-glance_endpoint = next(( endpoint for endpoint in catalog
-                          if endpoint.service_id == "image"
-                          and endpoint.interface == "public"), None)
+# glance_endpoint = next(( endpoint for endpoint in catalog
+#                           if endpoint.service_id == "image"
+#                           and endpoint.interface == "public"), None)
 
 
 
