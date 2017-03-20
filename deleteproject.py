@@ -18,7 +18,7 @@ from keystoneclient import session
 #from novaclient.v2 import client as novac
 # from cinderclient.v2 import client as cinderc
 from neutronclient.v2_0 import client as neutronc
-# from glanceclient.v2 import client as glancec
+from glanceclient.v2 import client as glancec
 from credentials import get_keystone_v3_creds
 import json
 import time
@@ -211,20 +211,22 @@ for router in neutron.list_routers()['routers']:
 for subnet in neutron.list_subnets()['subnets']:
     if subnet['project_id'] == project_id:
         neutron.delete_subnet(subnet['id'])
-        print "Deleted subnetwork %s" % subnet['id']
+        print "Subnetwork %s deleted" % subnet['id']
 
 # Deleting networks
 
 for network in neutron.list_networks()['networks']:
     if network['project_id'] == project_id:
         neutron.delete_network(network['id'])
-        print "Deleted network %s" % network['id']
+        print "%s deleted" % network['name']
                         
 # Glance: Deleting images
 
-# glance_endpoint = next(( endpoint for endpoint in catalog
-#                           if endpoint.service_id == "image"
-#                           and endpoint.interface == "public"), None)
+glance = glancec.Client(session=sess)
 
+for image in glance.images.list():
+    if image["owner"] == project_id:
+        glance.images.delete(image["id"])
+        print "Image %s deleted" % image["name"]                             
 
 
