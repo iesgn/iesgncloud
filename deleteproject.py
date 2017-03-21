@@ -180,10 +180,10 @@ auth = v3.Password(**creds)
 sess = session.Session(auth=auth)
 neutron = neutronc.Client(session=sess)
 
-# Deleting security groups
+# Deleting all security groups but default
 
 for sec_group in neutron.list_security_groups()['security_groups']:
-    if sec_group['project_id'] == project_id:
+    if sec_group['project_id'] == project_id and sec_group['name'] != "default":
         neutron.delete_security_group(sec_group['id'])
         print "Security group %s deleted" % sec_group['id']
 
