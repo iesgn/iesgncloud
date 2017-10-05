@@ -66,9 +66,8 @@ for member in user_list:
     # - router interface is created in subnet 10.0.0.0/24
 
     # Creating new project
-    defaultDomain = keystone.domains.find(name="default")
     project = keystone.projects.create(name = "Proyecto de %s" % member.name,
-                                       domain = defaultDomain,
+                                       domain = domain,
                                        description = "Proyecto de %s" % member.name)
     print "Creating new project with id %s" % project.id
     # Assigning selected role to member in the project with python requests
