@@ -253,7 +253,7 @@ user_role = keystone.roles.find(name=config.get("keystone","role"))
 for member in user_list:
 # It's necessary to check which users belong to this project
     url = "%s/projects/%s/users/%s/roles/%s" % (config.get("keystone","url"),
-                                                project.id,
+                                                project_id,
                                                 member.id,
                                                 user_role.id)
     try:
@@ -270,12 +270,12 @@ for member in user_list:
 ### Delete the project
 
 url = "%s/projects/%s" % (config.get("keystone","url"),
-                          project.id)
+                          project_id)
 
 try:
     r = requests.delete(url,headers=headers)
     if r.status_code == 204:
-        print "project %s deleted" % project.id
+        print "project %s deleted" % project_id
         
 except requests.exceptions.RequestException as e:
     print e
