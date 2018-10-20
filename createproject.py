@@ -84,7 +84,19 @@ for member in user_list:
     except requests.exceptions.RequestException as e:
         print e
         sys.exit(1)
-        
+    # Assigning "heat_stack_owner" role to the user in the project
+    user_role = keystone.roles.find("heat_stack_owner")
+    url = "%s/projects/%s/users/%s/roles/%s" % (config.get("keystone","url"),
+                                                project.id,
+                                                member.id,
+                                                user_role.id)
+    try:
+        requests.put(url,headers=headers)
+        print "Assigning heat_stack_owner role"
+    except requests.exceptions.RequestException as e:
+        print e
+        sys.exit(1)
+    
     neutron = neutronc.Client('2.0',
                               endpoint_url=config.get("neutron","endpoint"),
                               token = keystone.auth_token)
