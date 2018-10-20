@@ -85,7 +85,7 @@ for member in user_list:
         print e
         sys.exit(1)
     # Assigning "heat_stack_owner" role to the user in the project
-    user_role = keystone.roles.find("heat_stack_owner")
+    user_role = keystone.roles.find(name="heat_stack_owner")
     url = "%s/projects/%s/users/%s/roles/%s" % (config.get("keystone","url"),
                                                 project.id,
                                                 member.id,
