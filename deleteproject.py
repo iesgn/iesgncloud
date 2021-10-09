@@ -1,26 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 Python script used to delete a project from a domain, including the deletion
-of the following objects: 
- * instances
- * volume snapshots
- * volumes
- * floating IPs
- * security groups
+of the following objects:
+ * nova: instances
+ * cinder: volume snapshots, volume backups and volumes
+ * neutron: floating IPs, security groups, networks ,subnetworks and routers
 """
 import sys
-import ConfigParser
-import requests
+import configparser
+from keystoneauth1.identity import v3
+from keystoneauth1 import session
 from keystoneclient.v3 import client as keystonec
-from keystoneclient.auth.identity import v3
-from keystoneclient import session
-#from novaclient.v2 import client as novac
-# from cinderclient.v2 import client as cinderc
 from neutronclient.v2_0 import client as neutronc
-from glanceclient.v2 import client as glancec
+from novaclient import client as novac
+from cinderclient import client as cinderc
+from glanceclient import client as glancec
 from credentials import get_keystone_v3_creds
-import json
 import time
 
 if len(sys.argv) == 2:
@@ -28,176 +24,165 @@ if len(sys.argv) == 2:
     print "Deleting project %s and all related objects" % project_id
 else:
     print """
-    Usage: 
+    Usage:
     deleteproject <project_id>
     """
-    sys.exit()
-    
-config = ConfigParser.ConfigParser()
+    sys.exit(1)
+
+config = configparser.ConfigParser()
 config.read("adduser-cloud.conf")
 
-# Getting auth token from keystone
+# Getting auth token from keystone with a session
+
 try:
     creds = get_keystone_v3_creds()
-    keystone = keystonec.Client(**creds)
+    auth = v3.Password(**creds)
+    sess = session.Session(auth=auth)
+    keystone = keystonec.Client(session=sess)
 except keystonec.exceptions.Unauthorized:
-    print "Invalid keystone username or password"
-    sys.exit()
+    print ("Invalid keystone username or password")
+    sys.exit(1)
 
 # Verifying admin role for user
 try:
     keystone.users.list()
 except keystonec.exceptions.Forbidden:
-    print "You are not authorized to execute this program, admin role needed"
+    print ("You are not authorized to run this script, admin role needed")
     sys.exit()
-    
+
 # Getting domain
-# try:
-#     domain = keystone.domains.find(
-#         name=config.get("keystone","domain"))
-# except keystonec.exceptions.NotFound:
-#     print "Domain not found"
-#     sys.exit()
-
-catalog = keystone.endpoints.list()
-
-headers = {"X-Auth-Token":keystone.auth_token,
-           "Content-Type": "application/json"}
+try:
+    domain = keystone.domains.find(
+        name=config.get("default","domain"))
+except keystonec.exceptions.NotFound:
+    print ("Domain not found")
+    sys.exit(1)
 
 ### Nova: Deleting all servers
 
-nova_endpoint = next(( endpoint for endpoint in catalog
-                       if endpoint.service_id == "compute"
-                       and endpoint.interface == "public"), None)
+nova = novac.Client(2.1,
+                    session=sess,
+                    endpoint_type='internalURL')
 
-nova_endpoint.url = nova_endpoint.url.replace("$(tenant_id)s",
-                                              keystone.project_id)
-
-
-## Load the list of servers into a json object and it's requested to delete them
+## Loading the list of servers and requesting to delete them
 try:
-    servers = requests.get("%s/servers/detail" % nova_endpoint.url,
-                           headers=headers,
-                           params={
-                               "all_tenants":True,
-                               "project_id":project_id
-                               })
-    if servers.status_code == 200:
-        servers_json = json.loads(servers.text)
-
-    for server in servers_json["servers"]:
+    servers = nova.servers.list(search_opts={'all_tenants':True,
+                                             'project_id':project_id})
+    for server in servers:
         try:
-            r = requests.delete("%s/servers/%s" % (nova_endpoint.url,
-                                                   server["id"]),
-                                headers=headers)
-            if r.status_code == 202:
-                print "Request to delete server %s has been accepted." % server["id"]
-        except requests.exceptions.RequestException as e:
-            print e
-            sys.exit(1)      
-        
-except requests.exceptions.RequestException as e:
-    print e
+            nova.servers.delete(server)
+            print ("Server %s deleted" % server.name)
+        except novac.exceptions.NotFound as e:
+            print (e)
+            sys.exit(1)
+
+
+except novac.exceptions.CientException as e:
+    print (e)
     sys.exit(1)
+
+## Loading the list of server groups and requesting to delete them
+# try:
+#     server_groups = nova.server_groups.list(search_opts={'all_tenants':True)
+
+#     for server in servers:
+#         try:
+#             nova.servers.delete(server)
+#         except novac.exceptions.NotFound as e:
+#             print e
+#             sys.exit(1)
+
+# except requests.exceptions.RequestException as e:
+#     print e
+#     sys.exit(1)
 
 ### Cinder: Deleting snapshots and volumes
 
-cinder_endpoint = next(( endpoint for endpoint in catalog
-                         if endpoint.service_id == "volumev2"
-                         and endpoint.interface == "public"), None)
+cinder = cinderc.Client('3',
+                        session=sess,
+                        endpoint_type = 'internalURL')
 
-cinder_endpoint.url = cinder_endpoint.url.replace("$(tenant_id)s",
-                                                  keystone.project_id)
-
-## Load the list of snapshots into a json object and it's requested to delete them
+## Loading the list of snapshots and requesting to delete them
 try:
-    snapshots = requests.get("%s/snapshots/detail" % cinder_endpoint.url,
-                             headers=headers,
-                             params={
-                                 "all_tenants":True,
-                                 "project_id":project_id
-                             })
-    if snapshots.status_code == 200:
-        snapshots_json = json.loads(snapshots.text)
-
-    for snapshot in snapshots_json["snapshots"]:
-        try:
-            r = requests.delete("%s/snapshots/%s" % (cinder_endpoint.url,
-                                                     snapshot["id"]),
-                                headers=headers)
-            if r.status_code == 202:
-                print "Request to delete snapshot %s has been accepted." % snapshot["id"]
-        except requests.exceptions.RequestException as e:
-            print e
+    snapshots = cinder.volume_snapshots.list(search_opts={'all_tenants':True,
+                                                          'project_id':project_id})
+    for snapshot in snapshots:
+	try:
+            cinder.volume_snapshots.delete(snapshot)
+            print ("Snapshot %s deleted" % snapshot.name)
+        except cinderc.exceptions.NotFound as e:
+            print (e)
             sys.exit(1)
 
-except requests.exceptions.RequestException as e:
-    print e
+except cinderc.exceptions.CientException as e:
+    print (e)
     sys.exit(1)
 
 # Waiting until there were no snapshots available, because a volume can't be deleted
 # while any associated snapshot exists
 
 while True:
-    snapshots = requests.get("%s/snapshots/detail" % cinder_endpoint.url,
-                             headers=headers,
-                             params={
-                                 "all_tenants":True,
-                                 "project_id":project_id
-                             })
-    if len(json.loads(snapshots.text)["snapshots"]) == 0:
+    snapshots = cinder.volume_snapshots.list(search_opts={'all_tenants':True,
+                                                          'project_id':project_id})
+    if len(snapshots) == 0:
         break
     else:
-        print "Waiting until associated snapshots are deleted ..."
+        print ("Waiting until associated snapshots are deleted ...")
         time.sleep(5)
 
-## Load the list of volumes into a json object and it's requested to delete them
+## Loading the list of volume backups and requesting to delete them
 try:
-    volumes = requests.get("%s/volumes/detail" % cinder_endpoint.url,
-                           headers=headers,
-                           params={
-                               "all_tenants":True,
-                               "project_id":project_id
-                           })
-    if volumes.status_code == 200:
-        volumes_json = json.loads(volumes.text)
-
-    for volume in volumes_json["volumes"]:
-        try:
-            r = requests.delete("%s/volumes/%s" % (cinder_endpoint.url,
-                                                   volume["id"]),headers=headers)
-            if r.status_code == 202:
-                print "Request to delete volume %s has been accepted." % volume["id"]
-        except requests.exceptions.RequestException as e:
-            print e
+    backups = cinder.backups.list(search_opts={'all_tenants':True,
+                                                          'project_id':project_id})
+    for backup in backups:
+	try:
+            cinder.backups.delete(backup)
+            print ("Backup %s deleted" % backup.name)
+        except cinderc.exceptions.NotFound as e:
+            print (e)
             sys.exit(1)
 
-except requests.exceptions.RequestException as e:
-    print e
+except cinderc.exceptions.CientException as e:
+    print (e)
     sys.exit(1)
-    
+
+## Loading the list of volumes and requesting to delete them
+try:
+    volumes = cinder.volumes.list(search_opts={'all_tenants':True,
+                                                          'project_id':project_id})
+    for volume in volumes:
+	try:
+            cinder.volumes.delete(volume)
+            print ("Volume %s deleted" % volume.name)
+        except cinderc.exceptions.NotFound as e:
+            print (e)
+            sys.exit(1)
+
+except cinderc.exceptions.CientException as e:
+    print (e)
+    sys.exit(1)
 
 # Neutron: Deleting routers, subnets, networks, security groups and releasing floating IPs
 
 # Using keystone session because Neutron hasn't Keystone V3 support
 
-auth = v3.Password(**creds)
-sess = session.Session(auth=auth)
-neutron = neutronc.Client(session=sess)
+neutron = neutronc.Client(session = sess,
+                          project_id = project_id,
+                          endpoint_type = 'internalURL')
 
 # Deleting all security groups but default
 
 for sec_group in neutron.list_security_groups()['security_groups']:
     if sec_group['project_id'] == project_id and sec_group['name'] != "default":
         neutron.delete_security_group(sec_group['id'])
-        print "Security group %s deleted" % sec_group['id']
+        print ("Security group %s deleted" % sec_group['id'])
 
 # Deleting floating IPs
 
 for ip in neutron.list_floatingips()['floatingips']:
     if ip['project_id'] == project_id:
         neutron.delete_floatingip(ip['id'])
-        print "Floating IP %s released" % ip['floating_ip_address']
+        print ("Floating IP %s released" % ip['floating_ip_address'])
 
 # Deleting routers
 
@@ -209,78 +194,51 @@ for router in neutron.list_routers()['routers']:
                 neutron.remove_interface_router(router["id"],{'port_id':port["id"]})
         if router['project_id'] == project_id:
             neutron.delete_router(router['id'])
-            print "%s deleted" % router['name']
+            print ("%s deleted" % router['name'])
+
+# Deleting ports
+
+for port in neutron.list_ports()['ports']:
+    if port['project_id'] == project_id and port['device_owner'] == 'compute:nova':
+        neutron.delete_port(port['id'])
+        print ("Port %s deleted" % port['name'])
 
 # Deleting subnetworks
 
 for subnet in neutron.list_subnets()['subnets']:
     if subnet['project_id'] == project_id:
         neutron.delete_subnet(subnet['id'])
-        print "Subnetwork %s deleted" % subnet['id']
+        print ("Subnetwork %s deleted" % subnet['id'])
 
 # Deleting networks
 
 for network in neutron.list_networks()['networks']:
     if network['project_id'] == project_id:
         neutron.delete_network(network['id'])
-        print "%s deleted" % network['name']
-                        
+        print ("%s deleted" % network['name'])
+
 ### Glance: Deleting images
 
-glance = glancec.Client(session=sess)
+glance = glancec.Client('2', session=sess)
 
 for image in glance.images.list():
     if image["owner"] == project_id:
         glance.images.delete(image["id"])
-        print "Image %s deleted" % image["name"]                             
+        print "Image %s deleted" % image["name"]
 
-### Unassign role to user and delete project
+## Unassign 'member' role to all the users in project_id and delete project
 
-# Getting domain                                                                              
-try:
-    domain = keystone.domains.find(
-        name=config.get("keystone","domain"))
-except keystonec.exceptions.NotFound:
-    print "Domain not found"
-    sys.exit()
+roles = keystone.roles.list()
+member_role = [role for role in roles if role.name == 'member'][0]
+role_assignments = keystone.role_assignments.list()
 
-user_list = keystone.users.list(domain = domain)
-
-headers = {"X-Auth-Token":keystone.auth_token,
-           "Content-Type": "application/json"}
-user_role = keystone.roles.find(name=config.get("keystone","role"))
-
-for member in user_list:
-# It's necessary to check which users belong to this project
-    url = "%s/projects/%s/users/%s/roles/%s" % (config.get("keystone","url"),
-                                                project_id,
-                                                member.id,
-                                                user_role.id)
-    try:
-        r = requests.head(url,headers=headers)
-        if r.status_code == 201:
-            r = requests.delete(url,headers=headers)
-            if r.status_code == 204:
-                print "Role %s unassigned to user %s on this project" % (user_role.id,
-                                                                         member.id)
-    except requests.exceptions.RequestException as e:
-        print e
-        sys.exit(1)
+for role_a in role_assignments:
+    if 'project' in role_a.scope.keys():
+        if role_a.scope['project']['id'] == project_id:
+            keystone.role_assignments.delete(role_a)
 
 ### Delete the project
 
-url = "%s/projects/%s" % (config.get("keystone","url"),
-                          project_id)
-
-try:
-    r = requests.delete(url,headers=headers)
-    if r.status_code == 204:
-        print "project %s deleted" % project_id
-        
-except requests.exceptions.RequestException as e:
-    print e
-    sys.exit(1)
+keystone.domains.delete(domain)
 
 sys.exit(0)
-        
-
