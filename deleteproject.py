@@ -21,12 +21,12 @@ import time
 
 if len(sys.argv) == 2:
     project_id = sys.argv[1]
-    print "Deleting project %s and all related objects" % project_id
+    print ("Deleting project %s and all related objects" % project_id)
 else:
-    print """
+    print ("""
     Usage:
     deleteproject <project_id>
-    """
+    """)
     sys.exit(1)
 
 config = configparser.ConfigParser()
@@ -224,7 +224,7 @@ glance = glancec.Client('2', session=sess)
 for image in glance.images.list():
     if image["owner"] == project_id:
         glance.images.delete(image["id"])
-        print "Image %s deleted" % image["name"]
+        print ("Image %s deleted" % image["name"])
 
 ## Unassign 'member' role to all the users in project_id and delete project
 
