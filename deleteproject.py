@@ -224,7 +224,7 @@ for role_a in role_assignments:
         keystone.roles.revoke(role_a.role['id'],
                               user = role_a.user['id'],
                               project = project_id)
-    print ("Unassigning user roles")
+        print ("Unassigning user roles")
 
 ### Delete the project
 keystone.projects.delete(project_id)
