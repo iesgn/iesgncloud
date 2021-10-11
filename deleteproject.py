@@ -72,8 +72,6 @@ try:
         except novac.exceptions.NotFound as e:
             print (e)
             sys.exit(1)
-
-
 except novac.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
@@ -102,13 +100,12 @@ try:
     snapshots = cinder.volume_snapshots.list(search_opts={'all_tenants':True,
                                                           'project_id':project_id})
     for snapshot in snapshots:
-	try:
+        try:
             cinder.volume_snapshots.delete(snapshot)
             print ("Snapshot %s deleted" % snapshot.name)
         except cinderc.exceptions.NotFound as e:
             print (e)
             sys.exit(1)
-
 except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
@@ -117,8 +114,6 @@ except cinderc.exceptions.ClientException as e:
 # while any associated snapshot exists
 
 while True:
-    snapshots = cinder.volume_snapshots.list(search_opts={'all_tenants':True,
-                                                          'project_id':project_id})
     if len(snapshots) == 0:
         break
     else:
@@ -127,39 +122,33 @@ while True:
 
 ## Loading the list of volume backups and requesting to delete them
 try:
-    backups = cinder.backups.list(search_opts={'all_tenants':True,
-                                                          'project_id':project_id})
+    backups = cinder.backups.list(search_opts={'all_tenants':True, 'project_id':project_id})
     for backup in backups:
-	try:
+        try:
             cinder.backups.delete(backup)
             print ("Backup %s deleted" % backup.name)
         except cinderc.exceptions.NotFound as e:
             print (e)
             sys.exit(1)
-
 except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
 ## Loading the list of volumes and requesting to delete them
 try:
-    volumes = cinder.volumes.list(search_opts={'all_tenants':True,
-                                                          'project_id':project_id})
+    volumes = cinder.volumes.list(search_opts={'all_tenants':True, 'project_id':project_id})
     for volume in volumes:
-	try:
+        try:
             cinder.volumes.delete(volume)
             print ("Volume %s deleted" % volume.name)
         except cinderc.exceptions.NotFound as e:
             print (e)
             sys.exit(1)
-
 except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
 # Neutron: Deleting routers, subnets, networks, security groups and releasing floating IPs
-
-# Using keystone session because Neutron hasn't Keystone V3 support
 
 neutron = neutronc.Client(session = sess,
                           project_id = project_id,
