@@ -64,8 +64,7 @@ nova = novac.Client(2.1, session=sess, endpoint_type='internalURL')
 
 ## Loading the list of servers and requesting to delete them
 try:
-    servers = nova.servers.list(search_opts={'all_tenants':True,
-                                             'project_id':project_id})
+    servers = nova.servers.list(search_opts={'all_tenants':True, 'project_id':project_id})
     for server in servers:
         try:
             nova.servers.delete(server)
@@ -75,7 +74,7 @@ try:
             sys.exit(1)
 
 
-except novac.exceptions.CientException as e:
+except novac.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
@@ -110,7 +109,7 @@ try:
             print (e)
             sys.exit(1)
 
-except cinderc.exceptions.CientException as e:
+except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
@@ -138,7 +137,7 @@ try:
             print (e)
             sys.exit(1)
 
-except cinderc.exceptions.CientException as e:
+except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
@@ -154,7 +153,7 @@ try:
             print (e)
             sys.exit(1)
 
-except cinderc.exceptions.CientException as e:
+except cinderc.exceptions.ClientException as e:
     print (e)
     sys.exit(1)
 
