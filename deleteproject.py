@@ -60,9 +60,7 @@ except keystonec.exceptions.NotFound:
 
 ### Nova: Deleting all servers
 
-nova = novac.Client(2.1,
-                    session=sess,
-                    endpoint_type='internalURL')
+nova = novac.Client(2.1, session=sess, endpoint_type='internalURL')
 
 ## Loading the list of servers and requesting to delete them
 try:
@@ -98,9 +96,7 @@ except novac.exceptions.CientException as e:
 
 ### Cinder: Deleting snapshots and volumes
 
-cinder = cinderc.Client('3',
-                        session=sess,
-                        endpoint_type = 'internalURL')
+cinder = cinderc.Client('3', session=sess, endpoint_type = 'internalURL')
 
 ## Loading the list of snapshots and requesting to delete them
 try:
@@ -219,26 +215,31 @@ for network in neutron.list_networks()['networks']:
 
 ### Glance: Deleting images
 
-glance = glancec.Client('2', session=sess)
+# Getting glance's internal endpoint
+
+service_id = keystone.services.find(name='glance').id
+endpoint_url = keystone.endpoints.find(service_id = service_id,
+                                       interface='internal').url
+glance = glancec.Client('2', session = sess, endpoint = endpoint_url)
 
 for image in glance.images.list():
     if image["owner"] == project_id:
         glance.images.delete(image["id"])
         print ("Image %s deleted" % image["name"])
 
-## Unassign 'member' role to all the users in project_id and delete project
+## Unassign all roles to all the users in project_id and delete project
 
-roles = keystone.roles.list()
-member_role = [role for role in roles if role.name == 'member'][0]
 role_assignments = keystone.role_assignments.list()
 
 for role_a in role_assignments:
-    if 'project' in role_a.scope.keys():
-        if role_a.scope['project']['id'] == project_id:
-            keystone.role_assignments.delete(role_a)
+    if 'project' in role_a.scope.keys() and role_a.scope['project']['id'] == project_id:
+        keystone.roles.revoke(role_a.role['id'],
+                              user = role_a.user['id'],
+                              project = project_id)
+    print ("Unassigning user roles")
 
 ### Delete the project
-
-keystone.domains.delete(domain)
+keystone.projects.delete(project_id)
+print ("Project %s deleted" % project_id)
 
 sys.exit(0)
